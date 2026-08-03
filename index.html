@@ -130,7 +130,7 @@
   .tonearm.on{transform:rotate(6deg);}
   .tonearm svg{width:100%;height:100%;}
 
-  .trackinfo{text-align:center;margin-top:18px;}
+  .trackinfo{text-align:center;margin-top:26px;position:relative;z-index:2;}
   .trackinfo .name{font-family:'Fraunces',serif;font-weight:600;font-size:17px;}
   .trackinfo .from{font-size:12px;color:var(--ink-soft);margin-top:3px;}
 
@@ -149,15 +149,16 @@
     display:flex;align-items:center;justify-content:center;
   }
 
+  .lyrics-section{margin-top:22px;}
+  .lyrics-eyebrow{font-size:10px;letter-spacing:1.5px;color:var(--ink-soft);text-transform:uppercase;margin:0 0 8px 2px;}
   .lyrics-wrap{
-    margin-top:22px;background:rgba(255,255,255,.04);border:1px solid var(--line);
-    border-radius:14px;padding:16px 18px;height:130px;overflow:hidden;position:relative;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);
+    border-radius:14px;padding:14px 18px;height:120px;overflow:hidden;position:relative;
   }
   .lyrics-wrap::after{
     content:'';position:absolute;inset:0;pointer-events:none;
     background:linear-gradient(180deg, rgba(18,14,23,.55), transparent 20%, transparent 80%, rgba(18,14,23,.55));
   }
-  .lyrics-eyebrow{font-size:10px;letter-spacing:1.5px;color:var(--ink-soft);text-transform:uppercase;margin-bottom:8px;}
   .lyrics-scroll{transition:transform .15s linear;}
   .lyrics-scroll p{
     font-family:'Fraunces',serif;font-style:italic;font-size:14px;line-height:1.85;
@@ -229,9 +230,11 @@
       </div>
     </div>
 
-    <div class="lyrics-wrap">
+    <div class="lyrics-section">
       <div class="lyrics-eyebrow">lyrics</div>
-      <div class="lyrics-scroll" id="lyricsScroll"></div>
+      <div class="lyrics-wrap">
+        <div class="lyrics-scroll" id="lyricsScroll"></div>
+      </div>
     </div>
   </div>
 
@@ -254,6 +257,8 @@
    Add more artists by copying a whole { ... } block below.
    Add more songs to an artist by copying a song block inside its songs: [...]
    ===================================================================== */
+
+const LYRIC_SCROLL_SPEED = 1.6; // >1 = lyrics finish scrolling before the song ends (feels snappier). 1 = matches song length exactly.
 
 const ARTISTS = [
   {
@@ -552,9 +557,10 @@ audio.addEventListener('timeupdate', ()=>{
   tcur.textContent = fmt(audio.currentTime);
 
   const lyricsScroll = document.getElementById('lyricsScroll');
-  const maxScroll = lyricsScroll.scrollHeight - 110;
+  const maxScroll = lyricsScroll.scrollHeight - 96;
+  const scrollPct = Math.min(100, pct * LYRIC_SCROLL_SPEED);
   if(maxScroll > 0){
-    lyricsScroll.style.transform = `translateY(-${(pct/100) * maxScroll}px)`;
+    lyricsScroll.style.transform = `translateY(-${(scrollPct/100) * maxScroll}px)`;
   }
 });
 
