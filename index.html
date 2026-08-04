@@ -257,10 +257,14 @@
    One object per artist. Each artist has a cover image (used on the
    choose-artist page) and a list of songs. Each song needs:
      - title
-     - from      (e.g. "chorus", "verse 1" — shows as a small subtitle)
-     - cover     (square jpg/png, used as the vinyl label + mini disc)
-     - audio     (mp3 clip)
-     - lyrics    (plain text, blank line between blocks so they scroll nicely)
+     - from        (e.g. "chorus", "verse 1" — shows as a small subtitle)
+     - cover       (square jpg/png, used as the vinyl label + mini disc)
+     - audio       (mp3 clip)
+     - lyrics      (plain text, blank line between blocks so they scroll nicely)
+     - lyricsStart (OPTIONAL, in seconds) — the lyrics box stays still until
+                    playback reaches this point, then starts scrolling.
+                    Leave it out (or set to 0) for songs that should start
+                    scrolling immediately.
 
    Add more artists by copying a whole { ... } block below.
    Add more songs to an artist by copying a song block inside its songs: [...]
@@ -268,7 +272,7 @@
    the very last one in the songs array.
    ===================================================================== */
 
-const LYRIC_SCROLL_SPEED = 1; // 1 = scrolls the full lyrics block across the full song length, ending exactly on the last line. Increase only if you want it to finish early.
+const LYRIC_SCROLL_SPEED = 1; // 1 = scrolls the full lyrics block across the (post-delay) song length, ending exactly on the last line. Increase only if you want it to finish early.
 
 const ARTISTS = [
   {
@@ -281,6 +285,7 @@ const ARTISTS = [
         from: "Being Funny in a Foreign Language",
         cover: "assets/artists/the1975.jpg",
         audio: "assets/audio/the1975-AboutYouu.mp3",
+        lyricsStart: 40, // seconds — lyrics box holds still until playback hits 0:40, then scrolls
         lyrics: `I know a place
 It's somewhere I go when I need to remember your face
 We get married in our heads
@@ -547,6 +552,7 @@ const trackFrom = document.getElementById('trackFrom');
 
 let currentArtist = null;
 let currentSongIndex = -1; // -1 = nothing picked yet
+let currentLyricsStart = 0; // seconds before lyrics start scrolling, for the loaded song
 let playing = false;
 
 /* ---------- beat-reactive neon ring ---------- */
@@ -722,6 +728,7 @@ function showBlankPlayer(){
   coverImg.removeAttribute('src');
   trackName.textContent = 'Select a song';
   trackFrom.textContent = '';
+  currentLyricsStart = 0;
   renderLyrics('');
   fill.style.width = '0%';
   tcur.textContent = '0:00';
@@ -732,6 +739,7 @@ function showBlankPlayer(){
 function loadSong(i, autoplay){
   currentSongIndex = i;
   const s = currentArtist.songs[i];
+  currentLyricsStart = s.lyricsStart || 0;
   coverImg.src = s.cover;
   trackName.textContent = s.title;
   trackFrom.textContent = s.from || 'chorus';
@@ -789,14 +797,20 @@ audio.addEventListener('loadedmetadata', ()=>{
 });
 
 audio.addEventListener('timeupdate', ()=>{
+  // overall progress bar always reflects real playback position
   const pct = (audio.currentTime / audio.duration) * 100 || 0;
   fill.style.width = pct + '%';
   tcur.textContent = fmt(audio.currentTime);
 
+  // lyrics scroll: held at 0 until currentLyricsStart, then scrolls across
+  // the remaining runtime of the song
   const lyricsScroll = document.getElementById('lyricsScroll');
   const maxScroll = lyricsScroll.scrollHeight - 96;
-  const scrollPct = Math.min(100, pct * LYRIC_SCROLL_SPEED);
-  if(maxScroll > 0){
+
+  if(maxScroll > 0 && isFinite(audio.duration)){
+    const elapsed = Math.max(0, audio.currentTime - currentLyricsStart);
+    const scrollableDuration = Math.max(0.001, audio.duration - currentLyricsStart);
+    const scrollPct = Math.min(100, (elapsed / scrollableDuration) * 100 * LYRIC_SCROLL_SPEED);
     lyricsScroll.style.transform = `translateY(-${(scrollPct/100) * maxScroll}px)`;
   }
 });
