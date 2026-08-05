@@ -62,7 +62,7 @@
   .artist-card .arrow{color:var(--ink-soft);flex-shrink:0;}
 
   /* ---------- Screen: songs / player ---------- */
-  .back-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .back-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;}
   .back-btn{
     background:none;border:none;color:var(--ink-soft);cursor:pointer;
     display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif;font-size:12.5px;
@@ -73,6 +73,21 @@
   .back-btn:hover{color:var(--ink);background:rgba(255,255,255,.05);}
   .back-btn:hover svg{transform:translateX(-3px);}
   .back-btn:active{transform:scale(.94);}
+
+  /* ---------- visitor badge: name + avatar from the confidential page ---------- */
+  .visitor-badge{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);
+    border-radius:20px;padding:4px 12px 4px 4px;
+    font-family:'Sora',sans-serif;font-size:12.5px;color:var(--ink-soft);
+  }
+  .visitor-badge img{
+    width:26px;height:26px;border-radius:50%;object-fit:cover;
+    box-shadow:0 0 0 1px rgba(247,241,232,.18);
+  }
+  .visitor-badge .visitor-name{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;color:var(--gold);
+  }
 
   /* ---------- Screen transition animation ---------- */
   @keyframes slideOutRight{to{transform:translateX(28px);opacity:0;}}
@@ -267,6 +282,14 @@
                width .48s cubic-bezier(.4,0,.2,1), height .48s cubic-bezier(.4,0,.2,1),
                opacity .48s ease;
   }
+
+  /* ---------- Footer note ---------- */
+  .site-footer{
+    position:fixed;left:0;right:0;bottom:14px;z-index:2;
+    text-align:center;pointer-events:none;
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.6px;
+    color:var(--ink-soft);
+  }
 </style>
 </head>
 <body>
@@ -296,6 +319,10 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
         artists
       </button>
+      <div class="visitor-badge" id="visitorBadge" style="display:none;">
+        <span class="visitor-name" id="visitorName"></span>
+        <img id="visitorAvatarImg" src="" alt="">
+      </div>
     </div>
     <div class="eyebrow" id="artistEyebrow">now playing</div>
     <h1 id="artistTitle">Artist</h1>
@@ -346,6 +373,8 @@
   </div>
 
 </div>
+
+<div class="site-footer">Handpicked Beats by Cube • Press play &amp; vibe</div>
 
 <audio id="audio" preload="metadata"></audio>
 
@@ -1047,6 +1076,19 @@ Nating dalawa`
   }
 ];
 /* ===================================================================== */
+
+/* ---------- visitor badge: shows the name + avatar picked on the gate page ---------- */
+(function showVisitorBadge(){
+  try{
+    const name = localStorage.getItem('visitorName');
+    const avatar = localStorage.getItem('visitorAvatar');
+    if(name && avatar){
+      document.getElementById('visitorName').textContent = name;
+      document.getElementById('visitorAvatarImg').src = avatar;
+      document.getElementById('visitorBadge').style.display = 'flex';
+    }
+  }catch(e){ /* localStorage unavailable — badge just stays hidden */ }
+})();
 
 const screenArtists = document.getElementById('screenArtists');
 const screenSongs = document.getElementById('screenSongs');
