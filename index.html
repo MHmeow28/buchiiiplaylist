@@ -29,8 +29,9 @@
     font-family:'Sora',sans-serif;
     -webkit-font-smoothing:antialiased;
     display:flex;justify-content:center;
+    position:relative;
   }
-  .app{max-width:440px;width:100%;padding:34px 20px 50px;}
+  .app{max-width:440px;width:100%;padding:34px 20px 50px;position:relative;z-index:1;}
 
   .eyebrow{font-size:11px;letter-spacing:2px;color:var(--ink-soft);text-transform:uppercase;text-align:center;}
   h1{
@@ -128,16 +129,10 @@
   .disc.spinning{animation:spin 4s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .disc img{
-    width:34%;height:34%;border-radius:50%;object-fit:cover;
+    width:58%;height:58%;border-radius:50%;object-fit:cover;
     box-shadow:0 0 0 2px rgba(0,0,0,.4), 0 0 0 3px rgba(255,255,255,.08);
+    transition:visibility 0s;
   }
-  .tonearm{
-    position:absolute;top:6%;right:4%;width:36%;height:36%;
-    transform-origin:88% 12%;transform:rotate(-18deg);
-    transition:transform .5s cubic-bezier(.4,0,.2,1);pointer-events:none;
-  }
-  .tonearm.on{transform:rotate(6deg);}
-  .tonearm svg{width:100%;height:100%;}
 
   .trackinfo{text-align:center;margin-top:26px;position:relative;z-index:2;}
   .trackinfo .name{font-family:'Fraunces',serif;font-weight:600;font-size:17px;}
@@ -173,9 +168,52 @@
     font-family:'Fraunces',serif;font-style:italic;font-size:14px;line-height:1.85;
     color:var(--ink-soft);margin:0 0 10px;
   }
+
+  /* ---------- Themed magical backgrounds (behind the app) ---------- */
+  .theme-bg{
+    position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+    opacity:0;transition:opacity 1.1s ease;
+  }
+  .theme-bg.show{opacity:1;}
+  .galaxy-layer,.flower-layer,.sunflower-layer{position:absolute;inset:0;display:none;}
+  .theme-bg[data-theme="galaxy"] .galaxy-layer{display:block;}
+  .theme-bg[data-theme="flower"] .flower-layer{display:block;}
+  .theme-bg[data-theme="sunflower"] .sunflower-layer{display:block;}
+
+  .star{position:absolute;width:2px;height:2px;background:#F7F1E8;border-radius:50%;opacity:.2;animation:twinkle ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(1);}50%{opacity:1;transform:scale(1.8);}}
+  .nebula{position:absolute;border-radius:50%;filter:blur(46px);opacity:.32;animation:drift ease-in-out infinite;}
+  @keyframes drift{0%,100%{transform:translate(0,0);}50%{transform:translate(24px,-18px);}}
+
+  .petal{position:absolute;top:-8vh;animation:fall linear infinite;opacity:0;}
+  @keyframes fall{
+    0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0;}
+    8%{opacity:.9;}
+    92%{opacity:.7;}
+    100%{transform:translateY(112vh) translateX(24px) rotate(360deg);opacity:0;}
+  }
+
+  .sunflower{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.85;filter:drop-shadow(0 0 10px rgba(232,196,104,.45));}
+  @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
+
+  /* ---------- Flying vinyl swap clones ---------- */
+  .vinyl-fly{
+    position:fixed;z-index:50;object-fit:cover;pointer-events:none;
+    box-shadow:0 10px 26px rgba(0,0,0,.45);
+    transition:left .48s cubic-bezier(.4,0,.2,1), top .48s cubic-bezier(.4,0,.2,1),
+               width .48s cubic-bezier(.4,0,.2,1), height .48s cubic-bezier(.4,0,.2,1),
+               opacity .48s ease;
+  }
 </style>
 </head>
 <body>
+
+<div class="theme-bg" id="themeBg">
+  <div class="galaxy-layer" id="galaxyLayer"></div>
+  <div class="flower-layer" id="flowerLayer"></div>
+  <div class="sunflower-layer" id="sunflowerLayer"></div>
+</div>
+
 <div class="app">
 
   <!-- ===================== PAGE 1: choose artist ===================== -->
@@ -203,12 +241,6 @@
         <div class="turntable">
           <div class="disc" id="disc">
             <img id="coverImg" src="" alt="cover">
-          </div>
-          <div class="tonearm" id="tonearm">
-            <svg viewBox="0 0 100 100" fill="none">
-              <circle cx="88" cy="12" r="8" fill="#E8C468"/>
-              <line x1="88" y1="12" x2="18" y2="80" stroke="#E8C468" stroke-width="3" stroke-linecap="round"/>
-            </svg>
           </div>
         </div>
       </div>
@@ -265,6 +297,9 @@
                     playback reaches this point, then starts scrolling.
                     Leave it out (or set to 0) for songs that should start
                     scrolling immediately.
+     - theme       (OPTIONAL) — "galaxy" | "flower" | "sunflower" to give
+                    that song a magical animated background. Leave it out
+                    for the plain background.
 
    Add more artists by copying a whole { ... } block below.
    Add more songs to an artist by copying a song block inside its songs: [...]
@@ -354,14 +389,6 @@ You got excited
 And now you find out that your 'girl'
 Won't even get you undressed
 Or care about your beating chest
-(This must be my dream)
-Wide awake before I found you
-(This must be my dream)
-I can't wait for you, boy
-(Wake me from my dream)
-What does all our love amount to?
-(This must be my dream)
-We can't make love when you fly around me, baby
 (This must be my dream)
 Wide awake before I found you
 (This must be my dream)
@@ -597,6 +624,7 @@ I only see daylight, daylight, daylight, daylight`
         from: "Reflections on Moonlight & Poetry",
         cover: "assets/artists/Reflections.jpg",
         audio: "assets/audio/theridleys-Aphrodite.mp3",
+        theme: "flower",
         lyrics: `And it's all because
 I see the galaxies when I look in your eyes
 And I, can't speak, no, I, can't speak at all
@@ -675,6 +703,7 @@ Singing our song`
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/theRidleys-LoveIs.mp3",
          lyricsStart: 22,
+        theme: "sunflower",
         lyrics: `It's the feeling I get when I look in your eyes
 And you're staring back
 Oh I treasure good moments like that
@@ -722,6 +751,7 @@ I just wanna live my whole life with you`
         from: "Until I Reach the Sun",
         cover: "assets/artists/ReachSun.jpg",
         audio: "assets/audio/theridleys-Milkyway.mp3",
+        theme: "galaxy",
         lyrics: `Oh, I sit, and laugh, and figure out all the words
 That flow from your smiling mouths
 I've never known true warmth before
@@ -826,6 +856,7 @@ I'm so in love`
         from: "Robledo Timido",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-GustoKoSaAkinKaLang.mp3",
+        theme: "flower",
         lyrics: `
         HAHAHHAHAHHA Lagyan natin ng genggeng
 Lalo't sa ganitong panahon, bago pa nga malimutan na
@@ -916,6 +947,7 @@ So let's start right now`
         from: "Music Hero",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-KLWKN.mp3",
+        theme: "galaxy",
         lyrics: `Isang tingin ko lang sa buwan napalapit na rin sa iyo
 Langit ay nakangiti nag-aabang sa sandali
 Buong paligid ay nasasabik sa ating halik
@@ -941,7 +973,6 @@ const backBtn = document.getElementById('backBtn');
 
 const audio = document.getElementById('audio');
 const disc = document.getElementById('disc');
-const tonearm = document.getElementById('tonearm');
 const playBtn = document.getElementById('playBtn');
 const playIcon = document.getElementById('playIcon');
 const fill = document.getElementById('fill');
@@ -956,6 +987,7 @@ let currentArtist = null;
 let currentSongIndex = -1; // -1 = nothing picked yet
 let currentLyricsStart = 0; // seconds before lyrics start scrolling, for the loaded song
 let playing = false;
+let vinylFlying = false; // guards against overlapping fly animations
 
 /* ---------- beat-reactive neon ring ---------- */
 const neonRing = document.getElementById('neonRing');
@@ -996,6 +1028,62 @@ function resetNeon(){
 function fmt(s){
   if(!isFinite(s)) return '0:00';
   return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+}
+
+/* ---------- themed magical backgrounds ---------- */
+const themeBg = document.getElementById('themeBg');
+
+function buildGalaxy(){
+  const layer = document.getElementById('galaxyLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  let html = '';
+  for(let i=0;i<80;i++){
+    const top = Math.random()*100, left = Math.random()*100, dur = 2+Math.random()*3, delay = Math.random()*3;
+    html += `<div class="star" style="top:${top}%;left:${left}%;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+  html += `<div class="nebula" style="top:12%;left:15%;width:240px;height:240px;background:radial-gradient(circle,#B79CE0,transparent 70%);animation-duration:16s;"></div>`;
+  html += `<div class="nebula" style="top:58%;left:68%;width:280px;height:280px;background:radial-gradient(circle,#8B6FB3,transparent 70%);animation-duration:20s;animation-delay:3s;"></div>`;
+  html += `<div class="nebula" style="top:75%;left:10%;width:180px;height:180px;background:radial-gradient(circle,#E8C468,transparent 70%);animation-duration:22s;animation-delay:6s;"></div>`;
+  layer.innerHTML = html;
+}
+
+function buildFlowers(){
+  const layer = document.getElementById('flowerLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  const emojis = ['🌸','🌷','🌺','💮','🌼'];
+  let html = '';
+  for(let i=0;i<26;i++){
+    const left = Math.random()*100, dur = 10+Math.random()*10, delay = Math.random()*12, size = 14+Math.random()*16;
+    const e = emojis[Math.floor(Math.random()*emojis.length)];
+    html += `<div class="petal" style="left:${left}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${e}</div>`;
+  }
+  layer.innerHTML = html;
+}
+
+function buildSunflowers(){
+  const layer = document.getElementById('sunflowerLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  let html = '';
+  for(let i=0;i<15;i++){
+    const top = Math.random()*90, left = Math.random()*100, dur = 4+Math.random()*3, delay = Math.random()*4, size = 20+Math.random()*22;
+    html += `<div class="sunflower" style="top:${top}%;left:${left}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">🌻</div>`;
+  }
+  layer.innerHTML = html;
+}
+
+function setTheme(theme){
+  if(!theme){
+    themeBg.classList.remove('show');
+    return;
+  }
+  if(theme === 'galaxy') buildGalaxy();
+  if(theme === 'flower') buildFlowers();
+  if(theme === 'sunflower') buildSunflowers();
+  themeBg.dataset.theme = theme;
+  themeBg.classList.add('show');
 }
 
 /* ---------- render: choose artist page ---------- */
@@ -1059,6 +1147,7 @@ backBtn.addEventListener('click', ()=>{
   if(navigating) return;
   audio.pause();
   setPaused();
+  setTheme(null);
   goTo(screenSongs, screenArtists, 'backward');
 });
 
@@ -1070,7 +1159,7 @@ function renderSongsRow(){
     el.className = 'song-disc' + (i===currentSongIndex ? ' active' : '');
     el.title = s.title;
     el.innerHTML = `<div class="ring"><img src="${s.cover}" alt="${s.title}"></div>`;
-    el.addEventListener('click', ()=> loadSong(i, true));
+    el.addEventListener('click', ()=> flyAnimateSwitch(i, true));
     songsRow.appendChild(el);
   });
   positionSongsArc();
@@ -1135,6 +1224,7 @@ function showBlankPlayer(){
   fill.style.width = '0%';
   tcur.textContent = '0:00';
   tend.textContent = '0:00';
+  setTheme(null);
   setPaused();
 }
 
@@ -1148,6 +1238,7 @@ function loadSong(i, autoplay){
   audio.src = s.audio;
   renderLyrics(s.lyrics);
   renderSongsRow();
+  setTheme(s.theme || null);
   fill.style.width = '0%';
   tcur.textContent = '0:00';
   if(autoplay){
@@ -1158,6 +1249,89 @@ function loadSong(i, autoplay){
   }
 }
 
+/* ---------- flying vinyl swap: mini disc <-> big turntable ---------- */
+function flyAnimateSwitch(newIndex, autoplay){
+  // nothing playing yet, or same song clicked again, or an animation is already
+  // mid-flight — just do a plain load, no flight needed
+  if(currentSongIndex === -1 || newIndex === currentSongIndex || vinylFlying || !currentArtist){
+    loadSong(newIndex, autoplay);
+    return;
+  }
+
+  const oldIndex = currentSongIndex;
+  const discEls = songsRow.querySelectorAll('.song-disc');
+  const targetMini = discEls[newIndex];
+  const oldMini = discEls[oldIndex];
+  if(!targetMini || !oldMini){
+    loadSong(newIndex, autoplay);
+    return;
+  }
+
+  vinylFlying = true;
+
+  const targetImgEl = targetMini.querySelector('img');
+  const oldImgEl = oldMini.querySelector('img');
+  const targetRect = targetImgEl.getBoundingClientRect();
+  const oldMiniRect = oldImgEl.getBoundingClientRect();
+  const bigRect = coverImg.getBoundingClientRect();
+
+  const newSrc = currentArtist.songs[newIndex].cover;
+  const oldSrc = coverImg.src;
+
+  // hide the originals for the duration of the flight so it doesn't look doubled
+  targetImgEl.style.visibility = 'hidden';
+  oldImgEl.style.visibility = 'hidden';
+  coverImg.style.visibility = 'hidden';
+
+  const flyIn = document.createElement('img');
+  flyIn.src = newSrc;
+  flyIn.className = 'vinyl-fly';
+  flyIn.style.borderRadius = '50%';
+  flyIn.style.left = targetRect.left + 'px';
+  flyIn.style.top = targetRect.top + 'px';
+  flyIn.style.width = targetRect.width + 'px';
+  flyIn.style.height = targetRect.height + 'px';
+  flyIn.style.opacity = '1';
+  document.body.appendChild(flyIn);
+
+  const flyOut = document.createElement('img');
+  flyOut.src = oldSrc;
+  flyOut.className = 'vinyl-fly';
+  flyOut.style.borderRadius = '50%';
+  flyOut.style.left = bigRect.left + 'px';
+  flyOut.style.top = bigRect.top + 'px';
+  flyOut.style.width = bigRect.width + 'px';
+  flyOut.style.height = bigRect.height + 'px';
+  flyOut.style.opacity = '1';
+  document.body.appendChild(flyOut);
+
+  // force layout, then animate to the swapped destinations
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      flyIn.style.left = bigRect.left + 'px';
+      flyIn.style.top = bigRect.top + 'px';
+      flyIn.style.width = bigRect.width + 'px';
+      flyIn.style.height = bigRect.height + 'px';
+
+      flyOut.style.left = oldMiniRect.left + 'px';
+      flyOut.style.top = oldMiniRect.top + 'px';
+      flyOut.style.width = oldMiniRect.width + 'px';
+      flyOut.style.height = oldMiniRect.height + 'px';
+      flyOut.style.opacity = '0.35';
+    });
+  });
+
+  setTimeout(()=>{
+    flyIn.remove();
+    flyOut.remove();
+    targetImgEl.style.visibility = '';
+    oldImgEl.style.visibility = '';
+    coverImg.style.visibility = '';
+    loadSong(newIndex, autoplay);
+    vinylFlying = false;
+  }, 500);
+}
+
 function play(){
   if(currentSongIndex === -1) return;
   ensureAudioGraph();
@@ -1165,7 +1339,6 @@ function play(){
   audio.play().then(()=>{
     playing = true;
     disc.classList.add('spinning');
-    tonearm.classList.add('on');
     playIcon.innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
     animateNeon();
   }).catch(()=>{ /* blocked, tap play manually */ });
@@ -1174,7 +1347,6 @@ function play(){
 function setPaused(){
   playing = false;
   disc.classList.remove('spinning');
-  tonearm.classList.remove('on');
   playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
   resetNeon();
 }
@@ -1187,11 +1359,11 @@ playBtn.addEventListener('click', ()=>{
 
 document.getElementById('prevBtn').addEventListener('click', ()=>{
   if(currentSongIndex === -1 || !currentArtist) return;
-  loadSong((currentSongIndex - 1 + currentArtist.songs.length) % currentArtist.songs.length, true);
+  flyAnimateSwitch((currentSongIndex - 1 + currentArtist.songs.length) % currentArtist.songs.length, true);
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   if(currentSongIndex === -1 || !currentArtist) return;
-  loadSong((currentSongIndex + 1) % currentArtist.songs.length, true);
+  flyAnimateSwitch((currentSongIndex + 1) % currentArtist.songs.length, true);
 });
 
 audio.addEventListener('loadedmetadata', ()=>{
