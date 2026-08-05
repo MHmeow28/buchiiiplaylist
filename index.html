@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>confidential</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>buchiii's playlist</title>
+<link rel="icon" href="assets/gate/Mochi.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -234,7 +235,7 @@
    ===================================================================== */
 const NAME_GROUPS = [
   {
-    names: ["mochi","mochiii","mochii","pikachuu","pikachu","pikachuuu","ac","muchi","buchiii"],
+    names: ["mochi","mochiii","pikaachuu","ac"],
     avatar: "assets/gate/Mochi.png"
   },
   {
@@ -357,7 +358,12 @@ continueBtn.addEventListener('click', ()=>{
   try{
     localStorage.setItem('visitorName', welcomeName.textContent);
     localStorage.setItem('visitorAvatar', currentAvatar);
-  }catch(e){ /* localStorage unavailable, mixtape page just falls back to no badge */ }
+    /* one-time flag: proves the visitor just came through this gate.
+       mixtape.html checks for this and consumes it immediately, so a
+       refresh (or a direct/shared link to mixtape.html) always bounces
+       back here instead of skipping the name check. */
+    sessionStorage.setItem('gateOk', '1');
+  }catch(e){ /* storage unavailable, mixtape page just falls back to no badge and will redirect back here */ }
   window.location.href = NEXT_PAGE;
 });
 </script>
