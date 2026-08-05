@@ -198,14 +198,8 @@
     100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
   }
 
-  .petal{position:absolute;top:-10vh;animation:fall linear infinite;opacity:0;}
+  .petal{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.85;}
   .petal svg{width:100%;height:100%;display:block;}
-  @keyframes fall{
-    0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0;}
-    8%{opacity:.9;}
-    92%{opacity:.7;}
-    100%{transform:translateY(112vh) translateX(24px) rotate(360deg);opacity:0;}
-  }
 
   .sunflower{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.92;filter:drop-shadow(0 0 10px rgba(232,196,104,.45));}
   .sunflower svg{width:100%;height:100%;display:block;}
@@ -1122,6 +1116,23 @@ function sunflowerSVG(){
   </svg>`;
 }
 
+/* places one item per grid cell (with jitter) so the whole screen fills up,
+   instead of a purely random scatter that tends to leave empty patches */
+function gridPositions(cols, rows){
+  const cellW = 100 / cols, cellH = 100 / rows;
+  const spots = [];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const jitterX = (Math.random()-0.5) * cellW * 0.7;
+      const jitterY = (Math.random()-0.5) * cellH * 0.7;
+      const left = c * cellW + cellW/2 + jitterX;
+      const top = r * cellH + cellH/2 + jitterY;
+      spots.push({left, top});
+    }
+  }
+  return spots;
+}
+
 function buildFlowers(){
   const layer = document.getElementById('flowerLayer');
   if(layer.dataset.built) return;
@@ -1130,12 +1141,14 @@ function buildFlowers(){
     ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
     ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
   ];
+  const spots = gridPositions(7, 9); // dense coverage across the full screen
   let html = '';
-  for(let i=0;i<26;i++){
-    const left = Math.random()*100, dur = 10+Math.random()*10, delay = Math.random()*12, size = 20+Math.random()*20;
+  spots.forEach(({left, top})=>{
+    const dur = 9+Math.random()*11, delay = Math.random()*14;
+    const size = 14 + Math.random()*40; // small to big, randomized
     const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
-    html += `<div class="petal" style="left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor)}</div>`;
-  }
+    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor)}</div>`;
+  });
   layer.innerHTML = html;
 }
 
@@ -1143,11 +1156,13 @@ function buildSunflowers(){
   const layer = document.getElementById('sunflowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
+  const spots = gridPositions(6, 8); // dense coverage across the full screen
   let html = '';
-  for(let i=0;i<15;i++){
-    const top = Math.random()*90, left = Math.random()*100, dur = 4+Math.random()*3, delay = Math.random()*4, size = 30+Math.random()*26;
-    html += `<div class="sunflower" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
-  }
+  spots.forEach(({left, top})=>{
+    const dur = 3.5+Math.random()*3.5, delay = Math.random()*6;
+    const size = 18 + Math.random()*46; // small to big, randomized
+    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
+  });
   layer.innerHTML = html;
 }
 
