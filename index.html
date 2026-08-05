@@ -175,10 +175,13 @@
     opacity:0;transition:opacity 1.1s ease;
   }
   .theme-bg.show{opacity:1;}
-  .galaxy-layer,.flower-layer,.sunflower-layer{position:absolute;inset:0;display:none;}
+  .galaxy-layer,.flower-layer,.sunflower-layer,.rain-layer,.hearts-layer,.fireflies-layer{position:absolute;inset:0;display:none;}
   .theme-bg[data-theme="galaxy"] .galaxy-layer{display:block;}
   .theme-bg[data-theme="flower"] .flower-layer{display:block;}
   .theme-bg[data-theme="sunflower"] .sunflower-layer{display:block;}
+  .theme-bg[data-theme="rain"] .rain-layer{display:block;}
+  .theme-bg[data-theme="hearts"] .hearts-layer{display:block;}
+  .theme-bg[data-theme="fireflies"] .fireflies-layer{display:block;}
 
   .star{position:absolute;border-radius:50%;background:#F7F1E8;animation:twinkle ease-in-out infinite;}
   .star.dim{background:#CFC6DC;}
@@ -205,6 +208,40 @@
   .sunflower svg{width:100%;height:100%;display:block;}
   @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
 
+  /* ---- rain: moody, for melancholy / longing songs ---- */
+  .rain-layer{background:linear-gradient(180deg, rgba(60,70,110,.18), rgba(20,20,35,.12));}
+  .rain-streak{
+    position:absolute;top:-15vh;width:1.5px;height:64px;border-radius:2px;
+    background:linear-gradient(180deg, transparent, rgba(190,205,255,.55));
+    animation:rainfall linear infinite;
+  }
+  @keyframes rainfall{
+    0%{transform:translateY(0);opacity:0;}
+    6%{opacity:.75;}
+    92%{opacity:.5;}
+    100%{transform:translateY(132vh);opacity:0;}
+  }
+  .rain-flash{position:absolute;inset:0;background:rgba(200,210,255,.08);opacity:0;animation:rainFlash ease-in-out infinite;}
+  @keyframes rainFlash{0%,96%,100%{opacity:0;}97%{opacity:.5;}98%{opacity:.1;}99%{opacity:.35;}}
+
+  /* ---- hearts: sweet, for warm romantic songs ---- */
+  .heart{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.88;filter:drop-shadow(0 0 8px rgba(232,140,170,.35));}
+  .heart svg{width:100%;height:100%;display:block;}
+
+  /* ---- fireflies: dreamy, for nostalgic / night-glow songs ---- */
+  .firefly{
+    position:absolute;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,224,150,.95), rgba(255,180,80,0) 72%);
+    animation:fireflyDrift ease-in-out infinite, fireflyGlow ease-in-out infinite;
+  }
+  @keyframes fireflyDrift{
+    0%,100%{transform:translate(0,0);}
+    25%{transform:translate(12px,-16px);}
+    50%{transform:translate(-10px,-6px);}
+    75%{transform:translate(8px,12px);}
+  }
+  @keyframes fireflyGlow{0%,100%{opacity:.2;}50%{opacity:.95;}}
+
   /* ---------- Flying vinyl swap clones ---------- */
   .vinyl-fly{
     position:fixed;z-index:50;object-fit:cover;pointer-events:none;
@@ -221,6 +258,9 @@
   <div class="galaxy-layer" id="galaxyLayer"></div>
   <div class="flower-layer" id="flowerLayer"></div>
   <div class="sunflower-layer" id="sunflowerLayer"></div>
+  <div class="rain-layer" id="rainLayer"></div>
+  <div class="hearts-layer" id="heartsLayer"></div>
+  <div class="fireflies-layer" id="firefliesLayer"></div>
 </div>
 
 <div class="app">
@@ -329,6 +369,7 @@ const ARTISTS = [
         from: "Being Funny in a Foreign Language",
         cover: "assets/artists/the1975.jpg",
         audio: "assets/audio/the1975-AboutYouu.mp3",
+        theme: "fireflies",
         lyricsStart: 40, // seconds — lyrics box holds still until playback hits 0:40, then scrolls
         lyrics: `I know a place
 It's somewhere I go when I need to remember your face
@@ -369,6 +410,7 @@ Do you think I have forgotten about you? (Don't let go)`
         from: "I like it when you sleep, for you are so beautiful yet so unaware of it",
         cover: "assets/artists/ilikeit.jpg",
         audio: "assets/audio/the1975-Dream.mp3",
+        theme: "galaxy",
         lyricsStart: 20,
         lyrics: `I personify the 'adolescent on a phone'
 speaking like I'm bigger than my body
@@ -429,6 +471,7 @@ We can't make love when you fly around me, baby`
         from: "The 1975",
         cover: "assets/artists/the1975(1).jpg",
         audio: "assets/audio/the1975-Robbers.mp3",
+        theme: "rain",
         lyricsStart: 40,
         lyrics: `She had a face straight out a magazine
 God only knows, but you'll never leave her
@@ -481,6 +524,7 @@ You look so cool" (one more line)
         from: "Taylor Swift",
         cover: "assets/artists/OurSong.jpg",
         audio: "assets/audio/taylorswift-OurSong.mp3",
+        theme: "hearts",
         lyrics:
 `I was ridin' shotgun with my hair undone
 In the front seat of his car
@@ -506,6 +550,7 @@ Asking God if he could play it again`
         from: "Fearless",
         cover: "assets/artists/Fearless.jpg",
         audio: "assets/audio/taylorswift-Fairytale.mp3",
+        theme: "flower",
         lyrics:
 `But can you feel this magic in the air?
 It must have been the way you kissed me
@@ -525,6 +570,7 @@ Oh, oh, oh-oh, yeah`
         from: "Speak Now",
         cover: "assets/artists/SpeakNow.jpg",
         audio: "assets/audio/taylorswift-Enchanted.mp3",
+        theme: "flower",
         lyrics:
 `This is me praying that
 This was the very first page
@@ -542,6 +588,7 @@ Please don't have somebody waiting on you`
         from: "Red",
         cover: "assets/artists/Red.jpg",
         audio: "assets/audio/taylorswift-FirstNight.mp3",
+        theme: "galaxy",
         lyrics:
 `Take me away, take me away
 Take me away to you, to you
@@ -572,6 +619,7 @@ take me away
         from: "1989",
         cover: "assets/artists/1989.jpg",
         audio: "assets/audio/taylorswift-Style.mp3",
+        theme: "fireflies",
         lyrics:
 `Take me home
 Just take me home
@@ -589,6 +637,7 @@ And when we go crashing down (now we go), we come back every time
         from: "Reputation",
         cover: "assets/artists/Reputation.jpg",
         audio: "assets/audio/taylorswift-Call.mp3",
+        theme: "rain",
         lyrics:
 `So call it what you want, yeah, call it what you want to
 I want to wear his initial
@@ -607,6 +656,7 @@ Yes (would you run away?)`
         from: "Lover",
         cover: "assets/artists/Lover.jpg",
         audio: "assets/audio/taylorswift-Daylight.mp3",
+        theme: "sunflower",
         lyrics:
 `now
 I don't wanna look at anything else now that I saw you
@@ -633,7 +683,7 @@ I only see daylight, daylight, daylight, daylight`
         from: "Reflections on Moonlight & Poetry",
         cover: "assets/artists/Reflections.jpg",
         audio: "assets/audio/theridleys-Aphrodite.mp3",
-        theme: "flower",
+        theme: "galaxy",
         lyrics: `And it's all because
 I see the galaxies when I look in your eyes
 And I, can't speak, no, I, can't speak at all
@@ -655,6 +705,7 @@ Oh, mine`
         from: "All These and More",
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/theridleys-BeWithYou.mp3",
+        theme: "sunflower",
         lyrics: `I'm gonna work on my temper
 While you learn to speak your mind some more
 I'll be more of a shelter and less of a storm
@@ -670,6 +721,7 @@ For the rest of our lives`
         from: "Reflections on Moonlight & Poetry",
         cover: "assets/artists/Reflections.jpg",
         audio: "assets/audio/theridleys-Silence.mp3",
+        theme: "fireflies",
         lyrics: `Don't worry
 About the things that have been bothering you for so long
 Don't worry
@@ -712,7 +764,7 @@ Singing our song`
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/theRidleys-LoveIs.mp3",
          lyricsStart: 22,
-        theme: "sunflower",
+        theme: "hearts",
         lyrics: `It's the feeling I get when I look in your eyes
 And you're staring back
 Oh I treasure good moments like that
@@ -778,6 +830,7 @@ There's no reality, I'd rather choose
         from: "All These and More",
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/theridleys-KYGM.mp3",
+        theme: "hearts",
         lyrics: `'Cause ten years form now we'll look back at the photographs
 Happy with the choice that we made
 And I'll kiss you good morning
@@ -799,6 +852,7 @@ If this is a puzzle then let's try to solve it`
         from: "Never The Stranger",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-MovingCloser.mp3",
+        theme: "flower",
         lyricsStart: 11,
         lyrics: `When you smile, everything's in place
 I've waited so long, can make no mistake
@@ -841,6 +895,7 @@ I'm moving closer to you`
         from: "Ed Sheeran",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-TenerifeSea.mp3",
+        theme: "hearts",
         lyrics: `You look so wonderful in your dress
 I love your hair like that
 The way it falls on the side of your neck
@@ -889,6 +944,7 @@ Gusto ko sa 'kin ka lang`
         from: "Goo Goo Dolls",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-Iris.mp3",
+        theme: "rain",
         lyrics: `And I'd give up forever to touch you
 'Cause I know that you feel me somehow
 You're the closest to Heaven that I'll ever be
@@ -910,6 +966,7 @@ I just want you to know who I am`
         from: "Zedd",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-FindYou.mp3",
+        theme: "fireflies",
         lyrics: `Yeah, you always make me go
 I'll run away with your footsteps
 I'll build a city that dreams for two
@@ -938,6 +995,7 @@ I will find you`
         from: "One Direction",
         cover: "assets/artists/cubesplaylist.jpg",
         audio: "assets/audio/cube-Perfect.mp3",
+        theme: "hearts",
         lyrics: `if you like having secret little rendezvous
 If you like to do the things you know that we shouldn't do
 Then baby, I'm perfect
@@ -1166,6 +1224,56 @@ function buildSunflowers(){
   layer.innerHTML = html;
 }
 
+function heartSVG(color){
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 34 C8 26 3 18 3 12.5 C3 6.5 8 3 13 3 C16.5 3 19 5 20 8 C21 5 23.5 3 27 3 C32 3 37 6.5 37 12.5 C37 18 32 26 20 34 Z" fill="${color}"/>
+  </svg>`;
+}
+
+function buildRain(){
+  const layer = document.getElementById('rainLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  let html = '<div class="rain-flash" style="animation-duration:9s;"></div>';
+  for(let i=0;i<90;i++){
+    const left = Math.random()*100, dur = 0.7+Math.random()*0.6, delay = Math.random()*3;
+    const h = 40 + Math.random()*40;
+    html += `<div class="rain-streak" style="left:${left.toFixed(2)}%;height:${h.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+  layer.innerHTML = html;
+}
+
+function buildHearts(){
+  const layer = document.getElementById('heartsLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  const colors = ['#E88CAA','#F2A6C0','#D96E93','#F7C1D6','#E05C82'];
+  const spots = gridPositions(6, 8); // full-screen coverage
+  let html = '';
+  spots.forEach(({left, top})=>{
+    const dur = 3.5+Math.random()*3.5, delay = Math.random()*6;
+    const size = 14 + Math.random()*32; // small to big, randomized
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    html += `<div class="heart" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${heartSVG(color)}</div>`;
+  });
+  layer.innerHTML = html;
+}
+
+function buildFireflies(){
+  const layer = document.getElementById('firefliesLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  const spots = gridPositions(6, 7);
+  let html = '';
+  spots.forEach(({left, top})=>{
+    const size = 4 + Math.random()*10;
+    const driftDur = 5+Math.random()*6, driftDelay = Math.random()*6;
+    const glowDur = 2+Math.random()*3, glowDelay = Math.random()*4;
+    html += `<div class="firefly" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${driftDur}s,${glowDur}s;animation-delay:${driftDelay}s,${glowDelay}s;"></div>`;
+  });
+  layer.innerHTML = html;
+}
+
 function setTheme(theme){
   if(!theme){
     themeBg.classList.remove('show');
@@ -1174,6 +1282,9 @@ function setTheme(theme){
   if(theme === 'galaxy') buildGalaxy();
   if(theme === 'flower') buildFlowers();
   if(theme === 'sunflower') buildSunflowers();
+  if(theme === 'rain') buildRain();
+  if(theme === 'hearts') buildHearts();
+  if(theme === 'fireflies') buildFireflies();
   themeBg.dataset.theme = theme;
   themeBg.classList.add('show');
 }
