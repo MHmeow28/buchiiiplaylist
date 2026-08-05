@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>choose an artist</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>buchiii's music playlist</title>
+<link rel="icon" href="assets/gate/Mochi.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -285,7 +286,9 @@
 
   /* ---------- Footer note ---------- */
   .site-footer{
-    position:fixed;left:0;right:0;bottom:14px;z-index:2;
+    position:fixed;left:0;right:0;
+    bottom:max(14px, env(safe-area-inset-bottom));
+    z-index:2;
     text-align:center;pointer-events:none;
     font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.6px;
     color:var(--ink-soft);
@@ -379,6 +382,33 @@
 <audio id="audio" preload="metadata"></audio>
 
 <script>
+/* =====================================================================
+   GATE CHECK — must run before anything else.
+
+   The confidential/name-check page sets a one-time sessionStorage flag
+   right before redirecting here. We check for it immediately: if it's
+   present, we consume it (remove it) and let the page load normally.
+   If it's missing — e.g. someone refreshed this page directly, opened
+   a bookmark, or shared this URL — we bounce back to the gate instead
+   of skipping the name check.
+
+   Adjust the filename below if your gate page isn't named index.html.
+   ===================================================================== */
+(function enforceGate(){
+  const GATE_PAGE = 'index.html';
+  try{
+    if(sessionStorage.getItem('gateOk') === '1'){
+      sessionStorage.removeItem('gateOk');
+    } else {
+      window.location.replace(GATE_PAGE);
+    }
+  }catch(e){
+    // sessionStorage unavailable for some reason — fail safe by sending
+    // people back to the gate rather than letting them straight in
+    window.location.replace(GATE_PAGE);
+  }
+})();
+
 /* =====================================================================
    EDIT ONLY THIS SECTION.
 
