@@ -208,57 +208,20 @@
     100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
   }
 
-  /* ---- sunset sky shared by the flower / sunflower field themes ---- */
-  .flower-layer,.sunflower-layer{
-    background:linear-gradient(180deg,
-      #2e1f4a 0%, #5a3268 14%, #9c4a72 30%, #d5636a 44%,
-      #ef8560 54%, #f4a05c 58%, #f9c26a 68%, #7a5636 82%, #241a1f 100%);
-  }
-  .field-sun{
-    position:absolute;left:50%;bottom:36%;width:180px;height:180px;
-    transform:translate(-50%,50%);border-radius:50%;
-    background:radial-gradient(circle, #fff6df 0%, #ffe9b0 30%, rgba(255,196,120,.7) 58%, transparent 78%);
-    box-shadow:0 0 140px 60px rgba(255,196,120,.4), 0 0 40px 10px rgba(255,240,210,.5);
-  }
-  .field-sun-haze{
-    position:absolute;left:0;right:0;bottom:26%;height:30%;
-    background:linear-gradient(180deg, rgba(255,206,150,.35), transparent);
-    filter:blur(8px);
-  }
-  .field-treeline{
-    position:absolute;left:0;right:0;bottom:32%;height:9%;
-    background:
-      radial-gradient(ellipse 60px 40px at 6% 60%, #2a1c22 40%, transparent 42%),
-      radial-gradient(ellipse 90px 46px at 20% 55%, #2a1c22 40%, transparent 42%),
-      radial-gradient(ellipse 70px 42px at 38% 65%, #2a1c22 40%, transparent 42%),
-      radial-gradient(ellipse 100px 50px at 58% 55%, #2a1c22 40%, transparent 42%),
-      radial-gradient(ellipse 75px 44px at 76% 62%, #2a1c22 40%, transparent 42%),
-      radial-gradient(ellipse 95px 48px at 92% 56%, #2a1c22 40%, transparent 42%),
-      linear-gradient(180deg, transparent, rgba(30,20,24,.5));
-    opacity:.72;
-  }
-  .field-ground{
-    position:absolute;left:0;right:0;bottom:0;height:38%;
-    background:linear-gradient(180deg, rgba(35,20,20,0) 0%, rgba(28,17,18,.5) 35%, rgba(15,9,11,.86) 100%);
-  }
-  .cloud{position:absolute;animation:cloudDrift ease-in-out infinite;}
-  .cloud svg{width:100%;height:100%;display:block;}
-  @keyframes cloudDrift{
-    0%,100%{transform:translateX(0);}
-    50%{transform:translateX(16px);}
-  }
-
-  .petal{position:absolute;animation:flowSway ease-in-out infinite;opacity:.88;transform-origin:50% 100%;}
+  .petal{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.88;}
   .petal svg{width:100%;height:100%;display:block;}
 
-  .sunflower{position:absolute;animation:flowSway ease-in-out infinite;opacity:.94;transform-origin:50% 100%;}
+  .sunflower{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.94;}
   .sunflower svg{width:100%;height:100%;display:block;}
 
-  @keyframes flowSway{
-    0%,100%{transform:rotate(-5deg) translateX(0);}
-    25%{transform:rotate(3deg) translateX(4px);}
-    50%{transform:rotate(-2deg) translateX(-3px);}
-    75%{transform:rotate(4deg) translateX(2px);}
+  /* each petal/sunflower gets its own randomized --dx/--dy/--r custom
+     properties (set inline per element) so every one drifts on its own
+     unique little path instead of all swaying in lockstep */
+  @keyframes driftSway{
+    0%,100%{transform:translate(0,0) rotate(var(--r0,-4deg));}
+    25%{transform:translate(var(--dx1,6px),var(--dy1,-8px)) rotate(var(--r1,5deg));}
+    50%{transform:translate(var(--dx2,-5px),var(--dy2,4px)) rotate(var(--r2,-3deg));}
+    75%{transform:translate(var(--dx3,4px),var(--dy3,-5px)) rotate(var(--r3,6deg));}
   }
   @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
 
@@ -1213,16 +1176,13 @@ function buildGalaxy(){
 }
 
 /* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance */
-function flowerSVG(color, centerColor, stemColor, leafColor){
+function flowerSVG(color, centerColor){
   let petals = '';
   for(let i=0;i<5;i++){
     const rot = i * 72;
     petals += `<ellipse cx="20" cy="9" rx="6.5" ry="10" fill="${color}" opacity="0.92" transform="rotate(${rot} 20 20)"/>`;
   }
-  return `<svg viewBox="0 0 40 74" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20,31 C17,40 23,50 19,60 C16,66 21,70 20,74" stroke="${stemColor}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="11" cy="47" rx="7.5" ry="3.2" fill="${leafColor}" opacity="0.9" transform="rotate(-30 11 47)"/>
-    <ellipse cx="27" cy="58" rx="7.5" ry="3.2" fill="${leafColor}" opacity="0.9" transform="rotate(28 27 58)"/>
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
     <g>${petals}<circle cx="20" cy="20" r="4.5" fill="${centerColor}"/></g>
   </svg>`;
 }
@@ -1247,86 +1207,19 @@ function sunflowerSVG(variant){
     const cx = 30 + Math.cos(a)*r, cy = 30 + Math.sin(a)*r;
     seeds += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="0.9" fill="#2E1C10" opacity="0.55"/>`;
   }
-  // short stem stub only — in a dense field most of the stem is hidden
-  // behind the flowers in front of it
-  return `<svg viewBox="0 0 60 66" xmlns="http://www.w3.org/2000/svg">
-    <path d="M30,44 C28,50 32,55 30,60" stroke="#4F6B32" stroke-width="3.6" fill="none" stroke-linecap="round"/>
-    <ellipse cx="18" cy="52" rx="8.5" ry="4" fill="#5C7A3B" opacity="0.9" transform="rotate(-22 18 52)"/>
+  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
     <g>${outerPetals}${innerPetals}<circle cx="30" cy="30" r="10.5" fill="#3B2414"/><circle cx="30" cy="30" r="8.5" fill="#5B3A20"/>${seeds}</g>
   </svg>`;
 }
 
-let cloudIdCounter = 0;
-function cloudSVG(){
-  cloudIdCounter++;
-  const id = 'cloudGrad' + cloudIdCounter;
-  const palettes = [
-    ['#ffeecb','#ff9d6c','#c85f82'],
-    ['#ffe0ae','#e97a5f','#8a4a72'],
-    ['#fff3da','#ffb37a','#d6607a'],
-    ['#f4d4ff','#ff9ec4','#7a4a8a'],
-    ['#ffe9c7','#f2865a','#a8547a']
-  ];
-  const pal = palettes[Math.floor(Math.random()*palettes.length)];
-  return `<svg viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${pal[0]}"/>
-        <stop offset="55%" stop-color="${pal[1]}"/>
-        <stop offset="100%" stop-color="${pal[2]}"/>
-      </linearGradient>
-    </defs>
-    <g fill="url(#${id})">
-      <ellipse cx="36" cy="52" rx="34" ry="19"/>
-      <ellipse cx="76" cy="30" rx="44" ry="27"/>
-      <ellipse cx="122" cy="48" rx="32" ry="18"/>
-      <ellipse cx="50" cy="36" rx="22" ry="14" opacity="0.85"/>
-      <ellipse cx="108" cy="28" rx="26" ry="15" opacity="0.85"/>
-      <ellipse cx="82" cy="60" rx="64" ry="16"/>
-    </g>
-  </svg>`;
-}
-
-/* dramatic painterly sunset clouds (a couple of big banks in the corners
-   plus scattered wisps), a glowing low sun, a soft tree-line silhouette,
-   and a darkened ground band — shared by the flower / sunflower fields */
-function buildSkyExtras(){
-  let html = '<div class="field-sun-haze"></div><div class="field-sun"></div>';
-  // big dramatic cloud masses anchored top-left / top-right, like a
-  // sunset skyline, plus smaller wisps drifting through the middle sky
-  const cloudSpots = [
-    {left:-8,top:-4,w:260}, {left:70,top:-6,w:290}, {left:-4,top:16,w:170},
-    {left:78,top:14,w:190}, {left:30,top:2,w:200}, {left:18,top:22,w:150},
-    {left:56,top:20,w:160}, {left:88,top:30,w:150}, {left:4,top:32,w:140},
-    {left:42,top:30,w:170}
-  ];
-  cloudSpots.forEach(({left, top, w})=>{
-    const h = w * (80/160);
-    const dur = 16 + Math.random()*14, delay = Math.random()*8;
-    html += `<div class="cloud" style="left:${left}%;top:${top}%;width:${w}px;height:${h.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${cloudSVG()}</div>`;
-  });
-  html += '<div class="field-treeline"></div><div class="field-ground"></div>';
-  return html;
-}
-
-/* like gridPositions, but confined to a vertical band (e.g. the lower
-   "field" of the screen) with a depth value: 0 = far/small (near the
-   horizon), 1 = near/large (bottom of screen) */
-function fieldPositions(cols, rows, topMinPct, topMaxPct){
-  const cellW = 100 / cols;
-  const rangeH = topMaxPct - topMinPct;
-  const cellH = rangeH / rows;
-  const spots = [];
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const jitterX = (Math.random()-0.5) * cellW * 0.8;
-      const jitterY = (Math.random()-0.5) * cellH * 0.8;
-      const left = c * cellW + cellW/2 + jitterX;
-      const top = topMinPct + r * cellH + cellH/2 + jitterY;
-      spots.push({left, top, depth: rows>1 ? r/(rows-1) : 1});
-    }
-  }
-  return spots;
+/* builds the inline CSS custom properties driftSway reads from, with
+   randomized offsets/rotations so every flower wanders its own unique
+   little path instead of all swaying together */
+function randomDriftVars(pxRange, rotRange){
+  const rp = ()=> ((Math.random()*2-1)*pxRange).toFixed(1);
+  const rr = ()=> ((Math.random()*2-1)*rotRange).toFixed(1);
+  return `--dx1:${rp()}px;--dy1:${rp()}px;--dx2:${rp()}px;--dy2:${rp()}px;--dx3:${rp()}px;--dy3:${rp()}px;`
+       + `--r0:${rr()}deg;--r1:${rr()}deg;--r2:${rr()}deg;--r3:${rr()}deg;`;
 }
 
 /* places one item per grid cell (with jitter) so the whole screen fills up,
@@ -1354,21 +1247,13 @@ function buildFlowers(){
     ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
     ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
   ];
-  const stemColors = ['#7A9B5C','#6E9146','#88A868'];
-  let html = buildSkyExtras();
-  // a dense field stretching from just below the horizon down to the
-  // bottom of the screen — far rows are small and packed tight near the
-  // sun, near rows are large and overlap for solid ground coverage
-  const spots = fieldPositions(10, 10, 34, 100);
-  spots.forEach(({left, top, depth})=>{
-    const dur = 5+Math.random()*4, delay = Math.random()*6;
-    const scale = Math.pow(depth, 1.4);
-    const width = 8 + scale*34 + Math.random()*6;
-    const height = width * (74/40);
-    const opacity = 0.6 + depth*0.4;
+  const spots = gridPositions(7, 8);
+  let html = '';
+  spots.forEach(({left, top})=>{
+    const dur = 6+Math.random()*6, delay = Math.random()*6;
+    const size = 14 + Math.random()*24;
     const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
-    const stemColor = stemColors[Math.floor(Math.random()*stemColors.length)];
-    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;opacity:${opacity.toFixed(2)};animation-duration:${dur}s;animation-delay:${delay}s;z-index:${Math.round(depth*100)};">${flowerSVG(petalColor, centerColor, stemColor, stemColor)}</div>`;
+    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${flowerSVG(petalColor, centerColor)}</div>`;
   });
   layer.innerHTML = html;
 }
@@ -1377,16 +1262,13 @@ function buildSunflowers(){
   const layer = document.getElementById('sunflowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  let html = buildSkyExtras();
-  const spots = fieldPositions(10, 10, 32, 100);
-  spots.forEach(({left, top, depth})=>{
-    const dur = 5+Math.random()*4, delay = Math.random()*6;
-    const scale = Math.pow(depth, 1.4);
-    const width = 9 + scale*38 + Math.random()*6;
-    const height = width * (66/60);
-    const opacity = 0.62 + depth*0.38;
+  const spots = gridPositions(6, 7);
+  let html = '';
+  spots.forEach(({left, top})=>{
+    const dur = 6+Math.random()*6, delay = Math.random()*6;
+    const size = 16 + Math.random()*26;
     const variant = Math.floor(Math.random()*4);
-    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;opacity:${opacity.toFixed(2)};animation-duration:${dur}s;animation-delay:${delay}s;z-index:${Math.round(depth*100)};">${sunflowerSVG(variant)}</div>`;
+    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${sunflowerSVG(variant)}</div>`;
   });
   layer.innerHTML = html;
 }
