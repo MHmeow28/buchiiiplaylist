@@ -209,10 +209,10 @@
   }
 
   .petal{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.88;}
-  .petal svg{width:100%;height:100%;display:block;}
+  .petal svg{width:100%;height:100%;display:block;overflow:visible;}
 
   .sunflower{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.94;}
-  .sunflower svg{width:100%;height:100%;display:block;}
+  .sunflower svg{width:100%;height:100%;display:block;overflow:visible;}
 
   /* each petal/sunflower gets its own randomized --dx/--dy/--r custom
      properties (set inline per element) so every one drifts on its own
@@ -1175,14 +1175,16 @@ function buildGalaxy(){
   layer.innerHTML = html;
 }
 
-/* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance */
+/* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance.
+   Each viewBox is padded beyond the flower's own bounding circle so petals
+   never get clipped by the SVG canvas edge, no matter how they're rotated. */
 function flowerSVG(color, centerColor){
   let petals = '';
   for(let i=0;i<5;i++){
     const rot = i * 72;
     petals += `<ellipse cx="20" cy="9" rx="6.5" ry="10" fill="${color}" opacity="0.92" transform="rotate(${rot} 20 20)"/>`;
   }
-  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="-4 -4 48 48" xmlns="http://www.w3.org/2000/svg" overflow="visible">
     <g>${petals}<circle cx="20" cy="20" r="4.5" fill="${centerColor}"/></g>
   </svg>`;
 }
@@ -1207,7 +1209,7 @@ function sunflowerSVG(variant){
     const cx = 30 + Math.cos(a)*r, cy = 30 + Math.sin(a)*r;
     seeds += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="0.9" fill="#2E1C10" opacity="0.55"/>`;
   }
-  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="-8 -8 76 76" xmlns="http://www.w3.org/2000/svg" overflow="visible">
     <g>${outerPetals}${innerPetals}<circle cx="30" cy="30" r="10.5" fill="#3B2414"/><circle cx="30" cy="30" r="8.5" fill="#5B3A20"/>${seeds}</g>
   </svg>`;
 }
@@ -1247,11 +1249,11 @@ function buildFlowers(){
     ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
     ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
   ];
-  const spots = gridPositions(7, 8);
+  const spots = gridPositions(10, 12);
   let html = '';
   spots.forEach(({left, top})=>{
     const dur = 6+Math.random()*6, delay = Math.random()*6;
-    const size = 14 + Math.random()*24;
+    const size = 14 + Math.random()*26;
     const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
     html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${flowerSVG(petalColor, centerColor)}</div>`;
   });
@@ -1262,11 +1264,11 @@ function buildSunflowers(){
   const layer = document.getElementById('sunflowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const spots = gridPositions(6, 7);
+  const spots = gridPositions(9, 11);
   let html = '';
   spots.forEach(({left, top})=>{
     const dur = 6+Math.random()*6, delay = Math.random()*6;
-    const size = 16 + Math.random()*26;
+    const size = 16 + Math.random()*28;
     const variant = Math.floor(Math.random()*4);
     html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${sunflowerSVG(variant)}</div>`;
   });
