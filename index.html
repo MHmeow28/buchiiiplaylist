@@ -208,6 +208,34 @@
     100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
   }
 
+  /* ---- sunset sky shared by the flower / sunflower field themes ---- */
+  .flower-layer,.sunflower-layer{
+    background:linear-gradient(180deg,
+      #3a2350 0%, #6d3a5f 18%, #b3546f 36%, #e07d5c 52%,
+      #f4ab68 65%, #f7c987 74%, #6b4a3a 88%, #2c1c22 100%);
+  }
+  .field-sun{
+    position:absolute;left:50%;bottom:30%;width:130px;height:130px;
+    transform:translate(-50%,50%);border-radius:50%;
+    background:radial-gradient(circle, rgba(255,232,190,.98), rgba(255,178,110,.55) 55%, transparent 76%);
+    box-shadow:0 0 90px 34px rgba(255,190,120,.32);
+  }
+  .field-sun-haze{
+    position:absolute;left:0;right:0;bottom:22%;height:26%;
+    background:linear-gradient(180deg, rgba(255,196,140,.28), transparent);
+    filter:blur(6px);
+  }
+  .field-ground{
+    position:absolute;left:0;right:0;bottom:0;height:34%;
+    background:linear-gradient(180deg, rgba(35,20,20,0) 0%, rgba(28,17,18,.55) 45%, rgba(18,11,13,.82) 100%);
+  }
+  .cloud{position:absolute;animation:cloudDrift ease-in-out infinite;}
+  .cloud svg{width:100%;height:100%;display:block;}
+  @keyframes cloudDrift{
+    0%,100%{transform:translateX(0);}
+    50%{transform:translateX(18px);}
+  }
+
   .petal{position:absolute;animation:flowSway ease-in-out infinite;opacity:.88;transform-origin:50% 100%;}
   .petal svg{width:100%;height:100%;display:block;}
 
@@ -1207,6 +1235,55 @@ function sunflowerSVG(){
   </svg>`;
 }
 
+function cloudSVG(color){
+  return `<svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="34" cy="44" rx="30" ry="17" fill="${color}"/>
+    <ellipse cx="66" cy="30" rx="36" ry="22" fill="${color}"/>
+    <ellipse cx="104" cy="42" rx="28" ry="16" fill="${color}"/>
+    <ellipse cx="70" cy="52" rx="54" ry="15" fill="${color}"/>
+  </svg>`;
+}
+
+/* soft sunset clouds drifting slowly in the upper sky, plus a glowing low
+   sun and a darkened ground band — shared by the flower / sunflower fields */
+function buildSkyExtras(layerId){
+  const colors = ['rgba(255,255,255,.5)','rgba(255,214,190,.48)','rgba(214,150,168,.4)','rgba(255,236,205,.42)'];
+  let html = '<div class="field-sun-haze"></div><div class="field-sun"></div>';
+  const cloudSpots = [
+    {left:8,top:10,w:150},{left:60,top:5,w:190},{left:30,top:20,w:130},
+    {left:78,top:16,w:150},{left:5,top:28,w:110},{left:50,top:30,w:170},
+    {left:88,top:32,w:120}
+  ];
+  cloudSpots.forEach(({left, top, w})=>{
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const h = w * (70/140);
+    const dur = 14 + Math.random()*12, delay = Math.random()*6;
+    html += `<div class="cloud" style="left:${left}%;top:${top}%;width:${w}px;height:${h.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${cloudSVG(color)}</div>`;
+  });
+  html += '<div class="field-ground"></div>';
+  return html;
+}
+
+/* like gridPositions, but confined to a vertical band (e.g. the lower
+   "field" of the screen) with a depth value: 0 = far/small (near the
+   horizon), 1 = near/large (bottom of screen) */
+function fieldPositions(cols, rows, topMinPct, topMaxPct){
+  const cellW = 100 / cols;
+  const rangeH = topMaxPct - topMinPct;
+  const cellH = rangeH / rows;
+  const spots = [];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const jitterX = (Math.random()-0.5) * cellW * 0.8;
+      const jitterY = (Math.random()-0.5) * cellH * 0.8;
+      const left = c * cellW + cellW/2 + jitterX;
+      const top = topMinPct + r * cellH + cellH/2 + jitterY;
+      spots.push({left, top, depth: rows>1 ? r/(rows-1) : 1});
+    }
+  }
+  return spots;
+}
+
 /* places one item per grid cell (with jitter) so the whole screen fills up,
    instead of a purely random scatter that tends to leave empty patches */
 function gridPositions(cols, rows){
@@ -1233,15 +1310,20 @@ function buildFlowers(){
     ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
   ];
   const stemColors = ['#7A9B5C','#6E9146','#88A868'];
-  const spots = gridPositions(7, 6); // fewer rows since each flower is now taller (stem+leaves)
-  let html = '';
-  spots.forEach(({left, top})=>{
+  let html = buildSkyExtras('flowerLayer');
+  // flowers live in the lower two-thirds of the screen, like a field
+  // stretching toward the horizon — far rows are small & hazy, near rows
+  // are big and vivid
+  const spots = fieldPositions(8, 7, 40, 100);
+  spots.forEach(({left, top, depth})=>{
     const dur = 5+Math.random()*4, delay = Math.random()*6;
-    const width = 12 + Math.random()*26; // small to big, randomized
+    const width = (9 + depth*30) + Math.random()*6; // far = small, near = big
     const height = width * (74/40);
+    const opacity = 0.35 + depth*0.6;
+    const haze = (1-depth)*1.5; // distant flowers blur slightly into the sunset air
     const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
     const stemColor = stemColors[Math.floor(Math.random()*stemColors.length)];
-    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor, stemColor, stemColor)}</div>`;
+    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;opacity:${opacity.toFixed(2)};filter:blur(${haze.toFixed(1)}px);animation-duration:${dur}s;animation-delay:${delay}s;z-index:${Math.round(depth*10)};">${flowerSVG(petalColor, centerColor, stemColor, stemColor)}</div>`;
   });
   layer.innerHTML = html;
 }
@@ -1250,13 +1332,15 @@ function buildSunflowers(){
   const layer = document.getElementById('sunflowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const spots = gridPositions(6, 5); // fewer rows since each sunflower is now taller (stem+leaves)
-  let html = '';
-  spots.forEach(({left, top})=>{
+  let html = buildSkyExtras('sunflowerLayer');
+  const spots = fieldPositions(7, 6, 38, 100);
+  spots.forEach(({left, top, depth})=>{
     const dur = 5+Math.random()*4, delay = Math.random()*6;
-    const width = 16 + Math.random()*30; // small to big, randomized
+    const width = (11 + depth*34) + Math.random()*6; // far = small, near = big
     const height = width * (108/60);
-    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
+    const opacity = 0.4 + depth*0.6;
+    const haze = (1-depth)*1.4;
+    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;opacity:${opacity.toFixed(2)};filter:drop-shadow(0 0 8px rgba(232,196,104,.35)) blur(${haze.toFixed(1)}px);animation-duration:${dur}s;animation-delay:${delay}s;z-index:${Math.round(depth*10)};">${sunflowerSVG()}</div>`;
   });
   layer.innerHTML = html;
 }
