@@ -180,12 +180,26 @@
   .theme-bg[data-theme="flower"] .flower-layer{display:block;}
   .theme-bg[data-theme="sunflower"] .sunflower-layer{display:block;}
 
-  .star{position:absolute;width:2px;height:2px;background:#F7F1E8;border-radius:50%;opacity:.2;animation:twinkle ease-in-out infinite;}
-  @keyframes twinkle{0%,100%{opacity:.15;transform:scale(1);}50%{opacity:1;transform:scale(1.8);}}
-  .nebula{position:absolute;border-radius:50%;filter:blur(46px);opacity:.32;animation:drift ease-in-out infinite;}
+  .star{position:absolute;border-radius:50%;background:#F7F1E8;animation:twinkle ease-in-out infinite;}
+  .star.dim{background:#CFC6DC;}
+  .star.bright{box-shadow:0 0 6px 1px rgba(247,241,232,.85);}
+  @keyframes twinkle{0%,100%{opacity:.1;transform:scale(1);}50%{opacity:1;transform:scale(1.9);}}
+  .nebula{position:absolute;border-radius:50%;filter:blur(46px);opacity:.28;animation:drift ease-in-out infinite;}
   @keyframes drift{0%,100%{transform:translate(0,0);}50%{transform:translate(24px,-18px);}}
+  .shooting-star{
+    position:absolute;width:110px;height:2px;border-radius:2px;opacity:0;
+    background:linear-gradient(90deg, rgba(247,241,232,0), rgba(247,241,232,.95));
+    animation:shoot linear infinite;
+  }
+  @keyframes shoot{
+    0%{opacity:0;transform:translateX(0) rotate(var(--ang,22deg));}
+    2%{opacity:1;}
+    12%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
+    100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
+  }
 
-  .petal{position:absolute;top:-8vh;animation:fall linear infinite;opacity:0;}
+  .petal{position:absolute;top:-10vh;animation:fall linear infinite;opacity:0;}
+  .petal svg{width:100%;height:100%;display:block;}
   @keyframes fall{
     0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0;}
     8%{opacity:.9;}
@@ -193,7 +207,8 @@
     100%{transform:translateY(112vh) translateX(24px) rotate(360deg);opacity:0;}
   }
 
-  .sunflower{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.85;filter:drop-shadow(0 0 10px rgba(232,196,104,.45));}
+  .sunflower{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.92;filter:drop-shadow(0 0 10px rgba(232,196,104,.45));}
+  .sunflower svg{width:100%;height:100%;display:block;}
   @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
 
   /* ---------- Flying vinyl swap clones ---------- */
@@ -1038,26 +1053,88 @@ function buildGalaxy(){
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
   let html = '';
-  for(let i=0;i<80;i++){
-    const top = Math.random()*100, left = Math.random()*100, dur = 2+Math.random()*3, delay = Math.random()*3;
-    html += `<div class="star" style="top:${top}%;left:${left}%;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+
+  // layer 1: faraway dim dust of tiny stars, slow gentle twinkle
+  for(let i=0;i<140;i++){
+    const top = Math.random()*100, left = Math.random()*100;
+    const size = 0.8 + Math.random()*0.7;
+    const dur = 3 + Math.random()*4, delay = Math.random()*5;
+    html += `<div class="star dim" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
   }
-  html += `<div class="nebula" style="top:12%;left:15%;width:240px;height:240px;background:radial-gradient(circle,#B79CE0,transparent 70%);animation-duration:16s;"></div>`;
-  html += `<div class="nebula" style="top:58%;left:68%;width:280px;height:280px;background:radial-gradient(circle,#8B6FB3,transparent 70%);animation-duration:20s;animation-delay:3s;"></div>`;
-  html += `<div class="nebula" style="top:75%;left:10%;width:180px;height:180px;background:radial-gradient(circle,#E8C468,transparent 70%);animation-duration:22s;animation-delay:6s;"></div>`;
+  // layer 2: mid-field stars
+  for(let i=0;i<70;i++){
+    const top = Math.random()*100, left = Math.random()*100;
+    const size = 1.3 + Math.random()*1;
+    const dur = 2.2 + Math.random()*3, delay = Math.random()*4;
+    html += `<div class="star" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+  // layer 3: bright close stars with a soft glow
+  for(let i=0;i<28;i++){
+    const top = Math.random()*100, left = Math.random()*100;
+    const size = 2 + Math.random()*1.6;
+    const dur = 1.6 + Math.random()*2.4, delay = Math.random()*3;
+    html += `<div class="star bright" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
+  // a handful of soft colour nebula clouds
+  html += `<div class="nebula" style="top:12%;left:15%;width:260px;height:260px;background:radial-gradient(circle,#B79CE0,transparent 70%);animation-duration:16s;"></div>`;
+  html += `<div class="nebula" style="top:58%;left:68%;width:300px;height:300px;background:radial-gradient(circle,#8B6FB3,transparent 70%);animation-duration:20s;animation-delay:3s;"></div>`;
+  html += `<div class="nebula" style="top:78%;left:8%;width:200px;height:200px;background:radial-gradient(circle,#4C6FE0,transparent 70%);animation-duration:22s;animation-delay:6s;"></div>`;
+  html += `<div class="nebula" style="top:6%;left:70%;width:220px;height:220px;background:radial-gradient(circle,#E8C468,transparent 70%);animation-duration:19s;animation-delay:9s;"></div>`;
+
+  // occasional shooting stars streaking across the sky
+  for(let i=0;i<4;i++){
+    const top = 5 + Math.random()*60, left = Math.random()*70;
+    const ang = 18 + Math.random()*16;
+    const dur = 6 + Math.random()*8, delay = Math.random()*14;
+    html += `<div class="shooting-star" style="top:${top}%;left:${left}%;--ang:${ang}deg;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
   layer.innerHTML = html;
+}
+
+/* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance */
+function flowerSVG(color, centerColor){
+  let petals = '';
+  for(let i=0;i<5;i++){
+    const rot = i * 72;
+    petals += `<ellipse cx="20" cy="9" rx="6.5" ry="10" fill="${color}" opacity="0.92" transform="rotate(${rot} 20 20)"/>`;
+  }
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <g>${petals}<circle cx="20" cy="20" r="4.5" fill="${centerColor}"/></g>
+  </svg>`;
+}
+
+function sunflowerSVG(){
+  let petals = '';
+  for(let i=0;i<12;i++){
+    const rot = i * 30;
+    petals += `<ellipse cx="30" cy="10" rx="6" ry="13" fill="#F4C430" transform="rotate(${rot} 30 30)"/>`;
+  }
+  let seeds = '';
+  for(let i=0;i<10;i++){
+    const a = Math.random()*Math.PI*2, r = Math.random()*9;
+    const cx = 30 + Math.cos(a)*r, cy = 30 + Math.sin(a)*r;
+    seeds += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1" fill="#4A2C17" opacity="0.6"/>`;
+  }
+  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <g>${petals}<circle cx="30" cy="30" r="10" fill="#6B4226"/>${seeds}</g>
+  </svg>`;
 }
 
 function buildFlowers(){
   const layer = document.getElementById('flowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const emojis = ['🌸','🌷','🌺','💮','🌼'];
+  const palette = [
+    ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
+    ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
+  ];
   let html = '';
   for(let i=0;i<26;i++){
-    const left = Math.random()*100, dur = 10+Math.random()*10, delay = Math.random()*12, size = 14+Math.random()*16;
-    const e = emojis[Math.floor(Math.random()*emojis.length)];
-    html += `<div class="petal" style="left:${left}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${e}</div>`;
+    const left = Math.random()*100, dur = 10+Math.random()*10, delay = Math.random()*12, size = 20+Math.random()*20;
+    const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
+    html += `<div class="petal" style="left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor)}</div>`;
   }
   layer.innerHTML = html;
 }
@@ -1068,8 +1145,8 @@ function buildSunflowers(){
   layer.dataset.built = '1';
   let html = '';
   for(let i=0;i<15;i++){
-    const top = Math.random()*90, left = Math.random()*100, dur = 4+Math.random()*3, delay = Math.random()*4, size = 20+Math.random()*22;
-    html += `<div class="sunflower" style="top:${top}%;left:${left}%;font-size:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">🌻</div>`;
+    const top = Math.random()*90, left = Math.random()*100, dur = 4+Math.random()*3, delay = Math.random()*4, size = 30+Math.random()*26;
+    html += `<div class="sunflower" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
   }
   layer.innerHTML = html;
 }
