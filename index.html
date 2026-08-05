@@ -133,6 +133,13 @@
     box-shadow:0 0 0 2px rgba(0,0,0,.4), 0 0 0 3px rgba(255,255,255,.08);
     transition:visibility 0s;
   }
+  .cover-placeholder{
+    position:absolute;width:58%;height:58%;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Sora',sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--ink-soft);border:1px dashed rgba(247,241,232,.25);
+    background:rgba(255,255,255,.03);
+  }
 
   .trackinfo{text-align:center;margin-top:26px;position:relative;z-index:2;}
   .trackinfo .name{font-family:'Fraunces',serif;font-weight:600;font-size:17px;}
@@ -201,11 +208,18 @@
     100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
   }
 
-  .petal{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.85;}
+  .petal{position:absolute;animation:flowSway ease-in-out infinite;opacity:.88;transform-origin:50% 100%;}
   .petal svg{width:100%;height:100%;display:block;}
 
-  .sunflower{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.92;filter:drop-shadow(0 0 10px rgba(232,196,104,.45));}
+  .sunflower{position:absolute;animation:flowSway ease-in-out infinite;opacity:.94;filter:drop-shadow(0 0 8px rgba(232,196,104,.35));transform-origin:50% 100%;}
   .sunflower svg{width:100%;height:100%;display:block;}
+
+  @keyframes flowSway{
+    0%,100%{transform:rotate(-5deg) translateX(0);}
+    25%{transform:rotate(3deg) translateX(4px);}
+    50%{transform:rotate(-2deg) translateX(-3px);}
+    75%{transform:rotate(4deg) translateX(2px);}
+  }
   @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
 
   /* ---- rain: moody, for melancholy / longing songs ---- */
@@ -289,7 +303,8 @@
         <div class="neon-ring" id="neonRing"></div>
         <div class="turntable">
           <div class="disc" id="disc">
-            <img id="coverImg" src="" alt="cover">
+            <div class="cover-placeholder" id="coverPlaceholder">cover</div>
+            <img id="coverImg" src="" alt="">
           </div>
         </div>
       </div>
@@ -1047,8 +1062,20 @@ const tcur = document.getElementById('tcur');
 const tend = document.getElementById('tend');
 const progressTrack = document.getElementById('progressTrack');
 const coverImg = document.getElementById('coverImg');
+const coverPlaceholder = document.getElementById('coverPlaceholder');
 const trackName = document.getElementById('trackName');
 const trackFrom = document.getElementById('trackFrom');
+
+/* rotation-safe rect: the big disc keeps spinning, and getBoundingClientRect()
+   on a rotating element returns an inflated diagonal bounding box. offsetWidth/
+   offsetHeight ignore transforms, and the rotation is a pure spin around the
+   element's own center, so we can combine the two safely. */
+function centeredRect(el){
+  const rect = el.getBoundingClientRect();
+  const w = el.offsetWidth, h = el.offsetHeight;
+  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+  return { left: cx - w/2, top: cy - h/2, width: w, height: h };
+}
 
 let currentArtist = null;
 let currentSongIndex = -1; // -1 = nothing picked yet
@@ -1146,13 +1173,16 @@ function buildGalaxy(){
 }
 
 /* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance */
-function flowerSVG(color, centerColor){
+function flowerSVG(color, centerColor, stemColor, leafColor){
   let petals = '';
   for(let i=0;i<5;i++){
     const rot = i * 72;
     petals += `<ellipse cx="20" cy="9" rx="6.5" ry="10" fill="${color}" opacity="0.92" transform="rotate(${rot} 20 20)"/>`;
   }
-  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="0 0 40 74" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,31 C17,40 23,50 19,60 C16,66 21,70 20,74" stroke="${stemColor}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="11" cy="47" rx="7.5" ry="3.2" fill="${leafColor}" opacity="0.9" transform="rotate(-30 11 47)"/>
+    <ellipse cx="27" cy="58" rx="7.5" ry="3.2" fill="${leafColor}" opacity="0.9" transform="rotate(28 27 58)"/>
     <g>${petals}<circle cx="20" cy="20" r="4.5" fill="${centerColor}"/></g>
   </svg>`;
 }
@@ -1169,7 +1199,10 @@ function sunflowerSVG(){
     const cx = 30 + Math.cos(a)*r, cy = 30 + Math.sin(a)*r;
     seeds += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1" fill="#4A2C17" opacity="0.6"/>`;
   }
-  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="0 0 60 108" xmlns="http://www.w3.org/2000/svg">
+    <path d="M30,40 C26,55 34,68 29,82 C25,92 32,98 30,108" stroke="#5C7A3B" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="15" cy="63" rx="12" ry="5.2" fill="#6E9146" opacity="0.92" transform="rotate(-24 15 63)"/>
+    <ellipse cx="43" cy="82" rx="12" ry="5.2" fill="#6E9146" opacity="0.92" transform="rotate(22 43 82)"/>
     <g>${petals}<circle cx="30" cy="30" r="10" fill="#6B4226"/>${seeds}</g>
   </svg>`;
 }
@@ -1199,13 +1232,16 @@ function buildFlowers(){
     ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
     ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
   ];
-  const spots = gridPositions(7, 9); // dense coverage across the full screen
+  const stemColors = ['#7A9B5C','#6E9146','#88A868'];
+  const spots = gridPositions(7, 6); // fewer rows since each flower is now taller (stem+leaves)
   let html = '';
   spots.forEach(({left, top})=>{
-    const dur = 9+Math.random()*11, delay = Math.random()*14;
-    const size = 14 + Math.random()*40; // small to big, randomized
+    const dur = 5+Math.random()*4, delay = Math.random()*6;
+    const width = 12 + Math.random()*26; // small to big, randomized
+    const height = width * (74/40);
     const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
-    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor)}</div>`;
+    const stemColor = stemColors[Math.floor(Math.random()*stemColors.length)];
+    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${flowerSVG(petalColor, centerColor, stemColor, stemColor)}</div>`;
   });
   layer.innerHTML = html;
 }
@@ -1214,12 +1250,13 @@ function buildSunflowers(){
   const layer = document.getElementById('sunflowerLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const spots = gridPositions(6, 8); // dense coverage across the full screen
+  const spots = gridPositions(6, 5); // fewer rows since each sunflower is now taller (stem+leaves)
   let html = '';
   spots.forEach(({left, top})=>{
-    const dur = 3.5+Math.random()*3.5, delay = Math.random()*6;
-    const size = 18 + Math.random()*46; // small to big, randomized
-    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
+    const dur = 5+Math.random()*4, delay = Math.random()*6;
+    const width = 16 + Math.random()*30; // small to big, randomized
+    const height = width * (108/60);
+    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${width.toFixed(0)}px;height:${height.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${sunflowerSVG()}</div>`;
   });
   layer.innerHTML = html;
 }
@@ -1420,6 +1457,8 @@ function showBlankPlayer(){
   audio.pause();
   audio.removeAttribute('src');
   coverImg.removeAttribute('src');
+  coverImg.style.display = 'none';
+  coverPlaceholder.style.display = 'flex';
   trackName.textContent = 'Select a song';
   trackFrom.textContent = '';
   currentLyricsStart = 0;
@@ -1435,6 +1474,8 @@ function loadSong(i, autoplay){
   currentSongIndex = i;
   const s = currentArtist.songs[i];
   currentLyricsStart = s.lyricsStart || 0;
+  coverPlaceholder.style.display = 'none';
+  coverImg.style.display = '';
   coverImg.src = s.cover;
   trackName.textContent = s.title;
   trackFrom.textContent = s.from || 'chorus';
@@ -1474,9 +1515,9 @@ function flyAnimateSwitch(newIndex, autoplay){
 
   const targetImgEl = targetMini.querySelector('img');
   const oldImgEl = oldMini.querySelector('img');
-  const targetRect = targetImgEl.getBoundingClientRect();
-  const oldMiniRect = oldImgEl.getBoundingClientRect();
-  const bigRect = coverImg.getBoundingClientRect();
+  const targetRect = centeredRect(targetImgEl);
+  const oldMiniRect = centeredRect(oldImgEl);
+  const bigRect = centeredRect(coverImg);
 
   const newSrc = currentArtist.songs[newIndex].cover;
   const oldSrc = coverImg.src;
