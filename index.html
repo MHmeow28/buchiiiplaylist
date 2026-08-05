@@ -194,7 +194,7 @@
     <h1>scanning<span id="scanDots">...</span></h1>
 
     <div class="scan-frame" id="scanFrame">
-      <img src="assets/gate/mochi.png" alt="">
+      <img id="scanImg" src="assets/gate/Mochi.png" alt="">
       <div class="grid-overlay"></div>
       <div class="scan-line"></div>
       <div class="corner tl"></div>
@@ -226,12 +226,31 @@
 
 <script>
 /* =====================================================================
-   Names that are allowed through. Not case sensitive, extra spaces are
-   trimmed. Add or remove names freely — just keep the commas.
+   Names that are allowed through, grouped by which avatar they unlock.
+   Not case sensitive, extra spaces are trimmed. Add or remove names
+   freely — just keep the commas. Add a whole new group (with its own
+   avatar image) by copying one of the { names: [...], avatar: "..." }
+   blocks below.
    ===================================================================== */
-const ALLOWED_NAMES = [
-  "mochi","mochiii","mochii","pikachuu","pikachu","pikachuuu","ac","muchi","buchiii"
+const NAME_GROUPS = [
+  {
+    names: ["mochi","mochiii","mochii","pikachuu","pikachu","pikachuuu","ac","muchi","buchiii"],
+    avatar: "assets/gate/Mochi.png"
+  },
+  {
+    names: ["cube","cubixx","cubee"],
+    avatar: "assets/gate/Cube.png"
+  }
 ];
+
+/* flattened list used for the "is this name allowed" check */
+const ALLOWED_NAMES = NAME_GROUPS.flatMap(g => g.names);
+
+/* looks up which avatar image belongs to a given (already-lowercased) name */
+function getAvatarForName(normalized){
+  const group = NAME_GROUPS.find(g => g.names.includes(normalized));
+  return group ? group.avatar : "assets/gate/Mochi.png";
+}
 
 /* where to send people once they're verified */
 const NEXT_PAGE = "mixtape.html";
@@ -250,6 +269,9 @@ const progressFill = document.getElementById('progressFill');
 const pctText = document.getElementById('pctText');
 const welcomeName = document.getElementById('welcomeName');
 const continueBtn = document.getElementById('continueBtn');
+const scanImg = document.getElementById('scanImg');
+
+let currentAvatar = "assets/gate/Mochi.png"; // set per-visitor once their name is verified
 
 /* a few ambient twinkling dust specks, purely decorative */
 (function buildDust(){
@@ -280,6 +302,8 @@ nameForm.addEventListener('submit', (e)=>{
 
   if(ALLOWED_NAMES.includes(normalized)){
     errorMsg.classList.remove('show');
+    currentAvatar = getAvatarForName(normalized);
+    scanImg.src = currentAvatar;
     startScan(raw);
   } else {
     flashError("hmm, that name isn't on the list — try again?");
@@ -330,6 +354,10 @@ function startScan(displayName){
 }
 
 continueBtn.addEventListener('click', ()=>{
+  try{
+    localStorage.setItem('visitorName', welcomeName.textContent);
+    localStorage.setItem('visitorAvatar', currentAvatar);
+  }catch(e){ /* localStorage unavailable, mixtape page just falls back to no badge */ }
   window.location.href = NEXT_PAGE;
 });
 </script>
