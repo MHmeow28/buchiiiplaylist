@@ -283,8 +283,9 @@
     content:'';position:absolute;inset:0;
     background:linear-gradient(180deg, rgba(12,8,10,.30) 0%, rgba(12,8,10,.06) 35%, rgba(12,8,10,.14) 65%, rgba(12,8,10,.48) 100%);
   }
-  /* small glowing paper-lantern body: rounded shape + darker cap/base rings
-     + soft halo, built purely in CSS (no image asset needed) */
+  /* small glowing sky-lantern body: rectangular shape (like real paper sky
+     lanterns) + darker cap/base rings + soft yellow halo, built purely in
+     CSS (no image asset needed) */
   .lantern{
     position:absolute;
     animation:lanternRise linear infinite, lanternSway ease-in-out infinite;
@@ -292,13 +293,13 @@
   .lantern .halo{
     position:absolute;inset:-60%;border-radius:50%;
     filter:blur(9px);
-    background:radial-gradient(circle, var(--lg-color, rgba(255,190,110,.85)), transparent 68%);
+    background:radial-gradient(circle, var(--lg-color, rgba(255,210,61,.85)), transparent 68%);
     animation:lanternGlow ease-in-out infinite;
   }
   .lantern .body{
-    position:relative;width:100%;height:100%;border-radius:46% 46% 40% 40% / 55% 55% 45% 45%;
-    background:linear-gradient(180deg, var(--lg-light, #FFDFA6) 0%, var(--lg-color, #FFA23D) 55%, var(--lg-dark, #E2711D) 100%);
-    box-shadow:0 0 10px 2px var(--lg-color, rgba(255,162,61,.55)), inset 0 -4px 6px rgba(0,0,0,.18), inset 0 3px 5px rgba(255,255,255,.35);
+    position:relative;width:100%;height:100%;border-radius:6% 6% 10% 10% / 8% 8% 12% 12%;
+    background:linear-gradient(180deg, var(--lg-light, #FFF3B0) 0%, var(--lg-color, #FFD23D) 55%, var(--lg-dark, #E8A317) 100%);
+    box-shadow:0 0 12px 3px var(--lg-color, rgba(255,210,61,.6)), inset 0 -4px 6px rgba(0,0,0,.16), inset 0 3px 5px rgba(255,255,255,.4);
   }
   .lantern .cap{
     position:absolute;left:50%;top:-14%;width:34%;height:16%;
@@ -731,18 +732,19 @@ function buildGraffiti(){
   layer.innerHTML = html;
 }
 
-/* ---- lanterns: real lantern photo, plus small floating paper-lantern
-   shapes that slowly rise up the screen and sway side to side, with a
-   handful of soft warm glow sparks mixed in for depth ---- */
+/* ---- lanterns: real lantern photo, plus small floating rectangular
+   sky-lantern shapes (yellow glow, matching the reference photo) that
+   slowly rise up the screen and sway side to side, with a handful of
+   soft warm glow sparks mixed in for depth ---- */
 function buildLanterns(){
   const layer = document.getElementById('lanternsLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
   const palette = [
-    { color:'#FFA23D', light:'#FFDFA6', dark:'#E2711D' },
-    { color:'#FF7A5C', light:'#FFC9A6', dark:'#D9502E' },
-    { color:'#FFC94D', light:'#FFE9A8', dark:'#E0972A' },
-    { color:'#FF9E6B', light:'#FFDCC0', dark:'#D9713E' }
+    { color:'#FFD23D', light:'#FFF3B0', dark:'#E8A317' },
+    { color:'#FFC93D', light:'#FFEBA0', dark:'#DB9A1E' },
+    { color:'#FFDD6B', light:'#FFF6C9', dark:'#E0A82A' },
+    { color:'#FFCE54', light:'#FFEEB0', dark:'#DDA028' }
   ];
   let html = '';
 
@@ -773,7 +775,7 @@ function buildLanterns(){
     const size = 3 + Math.random()*5;
     const driftDur = 5 + Math.random()*6, driftDelay = Math.random()*6;
     const glowDur = 2 + Math.random()*3, glowDelay = Math.random()*4;
-    html += `<div class="firefly" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;background:radial-gradient(circle, rgba(255,206,140,.9), transparent 72%);animation-duration:${driftDur}s,${glowDur}s;animation-delay:${driftDelay}s,${glowDelay}s;"></div>`;
+    html += `<div class="firefly" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;background:radial-gradient(circle, rgba(255,220,120,.9), transparent 72%);animation-duration:${driftDur}s,${glowDur}s;animation-delay:${driftDelay}s,${glowDelay}s;"></div>`;
   }
 
   layer.innerHTML = html;
