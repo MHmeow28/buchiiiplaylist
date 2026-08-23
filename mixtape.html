@@ -198,13 +198,12 @@
     opacity:0;transition:opacity 1.1s ease;
   }
   .theme-bg.show{opacity:1;}
-  .galaxy-layer,.flower-layer,.sunflower-layer,.rain-layer,.hearts-layer,.fireflies-layer{position:absolute;inset:0;display:none;}
+  .galaxy-layer,.milkyway-layer,.starsmoon-layer,.sunflowersil-layer,.graffiti-layer{position:absolute;inset:0;display:none;}
   .theme-bg[data-theme="galaxy"] .galaxy-layer{display:block;}
-  .theme-bg[data-theme="flower"] .flower-layer{display:block;}
-  .theme-bg[data-theme="sunflower"] .sunflower-layer{display:block;}
-  .theme-bg[data-theme="rain"] .rain-layer{display:block;}
-  .theme-bg[data-theme="hearts"] .hearts-layer{display:block;}
-  .theme-bg[data-theme="fireflies"] .fireflies-layer{display:block;}
+  .theme-bg[data-theme="milkyway"] .milkyway-layer{display:block;}
+  .theme-bg[data-theme="stars_moon"] .starsmoon-layer{display:block;}
+  .theme-bg[data-theme="sunflower_silhouette"] .sunflowersil-layer{display:block;}
+  .theme-bg[data-theme="graffiti"] .graffiti-layer{display:block;}
 
   .star{position:absolute;border-radius:50%;background:#F7F1E8;animation:twinkle ease-in-out infinite;}
   .star.dim{background:#CFC6DC;}
@@ -224,56 +223,41 @@
     100%{opacity:0;transform:translateX(360px) rotate(var(--ang,22deg));}
   }
 
-  .petal{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.88;}
-  .petal svg{width:100%;height:100%;display:block;overflow:visible;}
-
-  .sunflower{position:absolute;animation-name:driftSway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;opacity:.94;}
-  .sunflower svg{width:100%;height:100%;display:block;overflow:visible;}
-
-  /* each petal/sunflower gets its own randomized --dx/--dy/--r custom
-     properties (set inline per element) so every one drifts on its own
-     unique little path instead of all swaying in lockstep */
-  @keyframes driftSway{
-    0%,100%{transform:translate(0,0) rotate(var(--r0,-4deg));}
-    25%{transform:translate(var(--dx1,6px),var(--dy1,-8px)) rotate(var(--r1,5deg));}
-    50%{transform:translate(var(--dx2,-5px),var(--dy2,4px)) rotate(var(--r2,-3deg));}
-    75%{transform:translate(var(--dx3,4px),var(--dy3,-5px)) rotate(var(--r3,6deg));}
+  /* ---- milkyway: dense diagonal star-band across the sky ---- */
+  .mw-band{
+    position:absolute;left:-25%;top:28%;width:150%;height:44%;
+    background:linear-gradient(180deg, transparent, rgba(200,190,255,.16) 35%, rgba(232,214,255,.26) 50%, rgba(200,190,255,.16) 65%, transparent);
+    filter:blur(20px);transform:rotate(-18deg);
   }
-  @keyframes swayFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-20px) rotate(6deg);}}
+  .mw-band2{
+    position:absolute;left:-25%;top:33%;width:150%;height:18%;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.12), transparent);
+    filter:blur(7px);transform:rotate(-18deg);
+  }
 
-  /* ---- rain: moody, for melancholy / longing songs ---- */
-  .rain-layer{background:linear-gradient(180deg, rgba(60,70,110,.18), rgba(20,20,35,.12));}
-  .rain-streak{
-    position:absolute;top:-15vh;width:1.5px;height:64px;border-radius:2px;
-    background:linear-gradient(180deg, transparent, rgba(190,205,255,.55));
-    animation:rainfall linear infinite;
-  }
-  @keyframes rainfall{
-    0%{transform:translateY(0);opacity:0;}
-    6%{opacity:.75;}
-    92%{opacity:.5;}
-    100%{transform:translateY(132vh);opacity:0;}
-  }
-  .rain-flash{position:absolute;inset:0;background:rgba(200,210,255,.08);opacity:0;animation:rainFlash ease-in-out infinite;}
-  @keyframes rainFlash{0%,96%,100%{opacity:0;}97%{opacity:.5;}98%{opacity:.1;}99%{opacity:.35;}}
+  /* ---- stars & moon ---- */
+  .moon{position:absolute;border-radius:50%;
+    background:radial-gradient(circle at 35% 32%, #FFFBEA, #F3E7B8 55%, #E3CE86 100%);
+    box-shadow:0 0 40px 14px rgba(247,232,170,.35), 0 0 90px 30px rgba(247,232,170,.12);}
+  .moon-crater{position:absolute;border-radius:50%;background:rgba(170,150,100,.28);}
+  .cloud{position:absolute;background:rgba(247,241,232,.09);border-radius:50px;filter:blur(2px);animation:cloudDrift linear infinite alternate;}
+  @keyframes cloudDrift{from{transform:translateX(-6%);}to{transform:translateX(6%);}}
 
-  /* ---- hearts: sweet, for warm romantic songs ---- */
-  .heart{position:absolute;animation:swayFloat ease-in-out infinite;opacity:.88;filter:drop-shadow(0 0 8px rgba(232,140,170,.35));}
-  .heart svg{width:100%;height:100%;display:block;}
+  /* ---- sunflower silhouette under a starry night sky ---- */
+  .sunflowersil-layer{background:linear-gradient(180deg, #241a30 0%, #1a1420 55%, #100c16 100%);}
+  .sf-sil{position:absolute;bottom:-4%;filter:drop-shadow(0 -6px 18px rgba(0,0,0,.4));}
+  .sf-glow{position:absolute;border-radius:50%;filter:blur(34px);opacity:.32;}
 
-  /* ---- fireflies: dreamy, for nostalgic / night-glow songs ---- */
-  .firefly{
-    position:absolute;border-radius:50%;
-    background:radial-gradient(circle, rgba(255,224,150,.95), rgba(255,180,80,0) 72%);
-    animation:fireflyDrift ease-in-out infinite, fireflyGlow ease-in-out infinite;
+  /* ---- graffiti wall ---- */
+  .graffiti-layer{
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 34px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 2px, transparent 2px 64px),
+      linear-gradient(160deg,#3a2f45,#221a2c 60%,#150f1c);
   }
-  @keyframes fireflyDrift{
-    0%,100%{transform:translate(0,0);}
-    25%{transform:translate(12px,-16px);}
-    50%{transform:translate(-10px,-6px);}
-    75%{transform:translate(8px,12px);}
-  }
-  @keyframes fireflyGlow{0%,100%{opacity:.2;}50%{opacity:.95;}}
+  .tag{position:absolute;font-family:'Fraunces',serif;font-style:italic;font-weight:700;white-space:nowrap;}
+  .tag .drip{position:absolute;left:16%;bottom:-16px;width:4px;border-radius:0 0 3px 3px;}
+  .doodle{position:absolute;opacity:.85;}
 
   /* ---------- Flying vinyl swap clones ---------- */
   .vinyl-fly{
@@ -299,11 +283,10 @@
 
 <div class="theme-bg" id="themeBg">
   <div class="galaxy-layer" id="galaxyLayer"></div>
-  <div class="flower-layer" id="flowerLayer"></div>
-  <div class="sunflower-layer" id="sunflowerLayer"></div>
-  <div class="rain-layer" id="rainLayer"></div>
-  <div class="hearts-layer" id="heartsLayer"></div>
-  <div class="fireflies-layer" id="firefliesLayer"></div>
+  <div class="milkyway-layer" id="milkywayLayer"></div>
+  <div class="starsmoon-layer" id="starsmoonLayer"></div>
+  <div class="sunflowersil-layer" id="sunflowersilLayer"></div>
+  <div class="graffiti-layer" id="graffitiLayer"></div>
 </div>
 
 <div class="app">
@@ -423,9 +406,13 @@
                     playback reaches this point, then starts scrolling.
                     Leave it out (or set to 0) for songs that should start
                     scrolling immediately.
-     - theme       (OPTIONAL) — "galaxy" | "flower" | "sunflower" to give
-                    that song a magical animated background. Leave it out
-                    for the plain background.
+     - theme       (OPTIONAL) — one of the five magical backgrounds:
+                      "galaxy"                — deep space, stars & nebula
+                      "milkyway"               — a dense diagonal star-band
+                      "stars_moon"             — starry sky with a glowing moon
+                      "sunflower_silhouette"   — two blooming sunflowers under a night sky
+                      "graffiti"               — spray-painted wall with names & doodles
+                    Leave it out for the plain background.
 
    Add more artists by copying a whole { ... } block below.
    Add more songs to an artist by copying a song block inside its songs: [...]
@@ -446,7 +433,7 @@ const ARTISTS = [
         from: "Being Funny in a Foreign Language",
         cover: "assets/artists/the1975.jpg",
         audio: "assets/audio/the1975-AboutYouu.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyricsStart: 40, // seconds — lyrics box holds still until playback hits 0:40, then scrolls
         lyrics: `I know a place
 It's somewhere I go when I need to remember your face
@@ -548,7 +535,7 @@ We can't make love when you fly around me, baby`
         from: "The 1975",
         cover: "assets/artists/the1975(1).jpg",
         audio: "assets/audio/the1975-Robbers.mp3",
-        theme: "rain",
+        theme: "stars_moon",
         lyricsStart: 40,
         lyrics: `She had a face straight out a magazine
 God only knows, but you'll never leave her
@@ -601,7 +588,7 @@ You look so cool" (one more line)
         from: "Taylor Swift",
         cover: "assets/artists/OurSong.jpg",
         audio: "assets/audio/taylorswift-oursong.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics:
 ``
       },
@@ -610,7 +597,7 @@ You look so cool" (one more line)
         from: "Fearless",
         cover: "assets/artists/Fearless.jpg",
         audio: "assets/audio/taylorswift-todaywasafairytale.mp3",
-        theme: "flower",
+        theme: "sunflower_silhouette",
         lyrics:
 ``
       },
@@ -619,7 +606,7 @@ You look so cool" (one more line)
         from: "Speak Now",
         cover: "assets/artists/SpeakNow.jpg",
         audio: "assets/audio/taylorswift-enchanted.mp3",
-        theme: "flower",
+        theme: "sunflower_silhouette",
         lyrics:
 ``
       },
@@ -629,7 +616,7 @@ You look so cool" (one more line)
         from: "Folklore",
         cover: "assets/artists/folklore.png",
         audio: "assets/audio/taylorswift-Mirrorball.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -639,7 +626,7 @@ You look so cool" (one more line)
         from: "The Tortured Poets Department",
         cover: "assets/artists/poets.png",
         audio: "assets/audio/taylorswift-downbad.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -659,7 +646,7 @@ You look so cool" (one more line)
         from: "Speak Now",
         cover: "assets/artists/SpeakNow.jpg",
         audio: "assets/audio/taylorswift-nevergrowup.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -669,7 +656,7 @@ You look so cool" (one more line)
         from: "1989",
         cover: "assets/artists/1989.jpg",
         audio: "assets/audio/taylorswift-style.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -678,7 +665,7 @@ You look so cool" (one more line)
         from: "Reputation",
         cover: "assets/artists/Reputation.jpg",
         audio: "assets/audio/taylorswift-callitwhatyouwant.mp3",
-        theme: "rain",
+        theme: "stars_moon",
         lyrics:
 ``
       },
@@ -688,7 +675,7 @@ You look so cool" (one more line)
         from: "Lover",
         cover: "assets/artists/Lover.jpg",
         audio: "assets/audio/taylorswift-corneliastreet.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -698,7 +685,7 @@ You look so cool" (one more line)
         from: "Reputation",
         cover: "assets/artists/Reputation.jpg",
         audio: "assets/audio/taylorswift-delicate.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -708,7 +695,7 @@ You look so cool" (one more line)
         from: "Red",
         cover: "assets/artists/Red.jpg",
         audio: "assets/audio/taylorswift-everthinghaschanged.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -718,7 +705,7 @@ You look so cool" (one more line)
         from: "The Life of a Showgirl",
         cover: "assets/artists/showgirl.png",
         audio: "assets/audio/taylorswift-ruinthefriendship.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics:
 ``
       },
@@ -728,7 +715,7 @@ You look so cool" (one more line)
         from: "Lover",
         cover: "assets/artists/Lover.jpg",
         audio: "assets/audio/taylorswift-daylight.mp3",
-        theme: "sunflower",
+        theme: "sunflower_silhouette",
         lyrics:
 ``
       }
@@ -754,7 +741,7 @@ You look so cool" (one more line)
         from: "All These and More",
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/TR-bewithyou.mp3",
-        theme: "sunflower",
+        theme: "sunflower_silhouette",
         lyrics: ``
       },
 
@@ -763,7 +750,7 @@ You look so cool" (one more line)
         from: "Reflections on Moonlight & Poetry",
         cover: "assets/artists/Reflections.jpg",
         audio: "assets/audio/TR-Meaning.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics: ``
       },
 
@@ -773,7 +760,7 @@ You look so cool" (one more line)
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/theRidleys-LoveIs.mp3",
          lyricsStart: 22,
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       },
 
@@ -782,7 +769,7 @@ You look so cool" (one more line)
         from: "Until I Reach the Sun",
         cover: "assets/artists/ReachSun.jpg",
         audio: "assets/audio/TR-Milkyway.mp3",
-        theme: "galaxy",
+        theme: "milkyway",
         lyrics: ``
       },
 
@@ -800,7 +787,7 @@ You look so cool" (one more line)
         from: "All These and More",
         cover: "assets/artists/Allthese.jpg",
         audio: "assets/audio/TR-KYGM.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       }
     ]
@@ -815,7 +802,7 @@ You look so cool" (one more line)
         from: "Never The Stranger",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-MovingCloser.mp3",
-        theme: "flower",
+        theme: "sunflower_silhouette",
         lyricsStart: 11,
         lyrics: ``
       },
@@ -825,7 +812,7 @@ You look so cool" (one more line)
         from: "Ed Sheeran",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-TenerifeSea.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       },
 
@@ -834,7 +821,7 @@ You look so cool" (one more line)
         from: "Robledo Timido",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-gustoko.mp3",
-        theme: "flower",
+        theme: "sunflower_silhouette",
         lyrics: `
         HAHAHHAHAHHA Lagyan natin ng genggeng`
       },
@@ -844,7 +831,7 @@ You look so cool" (one more line)
         from: "Goo Goo Dolls",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-iris.mp3",
-        theme: "rain",
+        theme: "stars_moon",
         lyrics: ``
       },
 
@@ -853,7 +840,7 @@ You look so cool" (one more line)
         from: "Zedd",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-findyou.mp3",
-        theme: "fireflies",
+        theme: "milkyway",
         lyrics: ``
       },
 
@@ -862,7 +849,7 @@ You look so cool" (one more line)
         from: "One Direction",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-perfect.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       },
 
@@ -880,7 +867,7 @@ You look so cool" (one more line)
         from: "Earl Agustin",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-ditosakin.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       },
 
@@ -889,7 +876,7 @@ You look so cool" (one more line)
         from: "JAO",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-torpe.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       },
 
@@ -898,7 +885,7 @@ You look so cool" (one more line)
         from: "Stephen Speaks",
         cover: "assets/gate/cubeehead.png",
         audio: "assets/audio/cube-outofmyleague.mp3",
-        theme: "hearts",
+        theme: "graffiti",
         lyrics: ``
       }
     ]
@@ -921,7 +908,7 @@ You look so cool" (one more line)
         from: "Ruth B",
         cover: "assets/gate/mochiiihead.png",
         audio: "assets/audio/moch-Dandelions.mp3",
-        theme: "galaxy",
+        theme: "milkyway",
         lyrics: ``
      },
 
@@ -939,7 +926,7 @@ You look so cool" (one more line)
         from: "OLG Zak",
         cover: "assets/gate/mochiiihead.png",
         audio: "assets/audio/moch-ipagdadamotkita.mp3",
-        theme: "galaxy",
+        theme: "graffiti",
         lyrics: ``
      },
 
@@ -948,7 +935,7 @@ You look so cool" (one more line)
         from: "RADWIMPS",
         cover: "assets/gate/mochiiihead.png",
         audio: "assets/audio/moch-Dream.mp3",
-        theme: "galaxy",
+        theme: "stars_moon",
         lyrics: ``
      },
 
@@ -965,7 +952,7 @@ You look so cool" (one more line)
         from: "Over October",
         cover: "assets/gate/mochiiihead.png",
         audio: "assets/audio/moch-ikot.mp3",
-        theme: "galaxy",
+        theme: "milkyway",
         lyrics: ``
      },
 
@@ -974,7 +961,7 @@ You look so cool" (one more line)
         from: "HellMerry",
         cover: "assets/gate/mochiiihead.png",
         audio: "assets/audio/moch-myday.mp3",
-        theme: "galaxy",
+        theme: "stars_moon",
         lyrics: ``
      },
 
@@ -1086,6 +1073,23 @@ function fmt(s){
 /* ---------- themed magical backgrounds ---------- */
 const themeBg = document.getElementById('themeBg');
 
+/* places one item per grid cell (with jitter) so the whole screen fills up,
+   instead of a purely random scatter that tends to leave empty patches */
+function gridPositions(cols, rows){
+  const cellW = 100 / cols, cellH = 100 / rows;
+  const spots = [];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const jitterX = (Math.random()-0.5) * cellW * 0.7;
+      const jitterY = (Math.random()-0.5) * cellH * 0.7;
+      const left = c * cellW + cellW/2 + jitterX;
+      const top = r * cellH + cellH/2 + jitterY;
+      spots.push({left, top});
+    }
+  }
+  return spots;
+}
+
 function buildGalaxy(){
   const layer = document.getElementById('galaxyLayer');
   if(layer.dataset.built) return;
@@ -1131,153 +1135,155 @@ function buildGalaxy(){
   layer.innerHTML = html;
 }
 
-/* small reusable SVGs, drawn (not emoji) — colour + rotation vary per instance.
-   Each viewBox is padded beyond the flower's own bounding circle so petals
-   never get clipped by the SVG canvas edge, no matter how they're rotated. */
-function flowerSVG(color, centerColor){
-  let petals = '';
-  for(let i=0;i<5;i++){
-    const rot = i * 72;
-    petals += `<ellipse cx="20" cy="9" rx="6.5" ry="10" fill="${color}" opacity="0.92" transform="rotate(${rot} 20 20)"/>`;
-  }
-  return `<svg viewBox="-4 -4 48 48" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-    <g>${petals}<circle cx="20" cy="20" r="4.5" fill="${centerColor}"/></g>
-  </svg>`;
-}
-
-function sunflowerSVG(variant){
-  const petalPalettes = [
-    ['#F6C130','#E0872E'], ['#F9D65C','#EE9A2E'], ['#F2A93B','#D9761F'], ['#FBDD7A','#F0A93E']
-  ];
-  const [outerColor, innerColor] = petalPalettes[variant % petalPalettes.length];
-  let outerPetals = '', innerPetals = '';
-  for(let i=0;i<13;i++){
-    const rot = i * (360/13);
-    outerPetals += `<ellipse cx="30" cy="9" rx="6.6" ry="14" fill="${outerColor}" transform="rotate(${rot} 30 30)"/>`;
-  }
-  for(let i=0;i<13;i++){
-    const rot = i * (360/13) + 13.8;
-    innerPetals += `<ellipse cx="30" cy="13" rx="4.6" ry="9.5" fill="${innerColor}" opacity="0.85" transform="rotate(${rot} 30 30)"/>`;
-  }
-  let seeds = '';
-  for(let i=0;i<16;i++){
-    const a = Math.random()*Math.PI*2, r = Math.random()*8.5;
-    const cx = 30 + Math.cos(a)*r, cy = 30 + Math.sin(a)*r;
-    seeds += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="0.9" fill="#2E1C10" opacity="0.55"/>`;
-  }
-  return `<svg viewBox="-8 -8 76 76" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-    <g>${outerPetals}${innerPetals}<circle cx="30" cy="30" r="10.5" fill="#3B2414"/><circle cx="30" cy="30" r="8.5" fill="#5B3A20"/>${seeds}</g>
-  </svg>`;
-}
-
-/* builds the inline CSS custom properties driftSway reads from, with
-   randomized offsets/rotations so every flower wanders its own unique
-   little path instead of all swaying together */
-function randomDriftVars(pxRange, rotRange){
-  const rp = ()=> ((Math.random()*2-1)*pxRange).toFixed(1);
-  const rr = ()=> ((Math.random()*2-1)*rotRange).toFixed(1);
-  return `--dx1:${rp()}px;--dy1:${rp()}px;--dx2:${rp()}px;--dy2:${rp()}px;--dx3:${rp()}px;--dy3:${rp()}px;`
-       + `--r0:${rr()}deg;--r1:${rr()}deg;--r2:${rr()}deg;--r3:${rr()}deg;`;
-}
-
-/* places one item per grid cell (with jitter) so the whole screen fills up,
-   instead of a purely random scatter that tends to leave empty patches */
-function gridPositions(cols, rows){
-  const cellW = 100 / cols, cellH = 100 / rows;
-  const spots = [];
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const jitterX = (Math.random()-0.5) * cellW * 0.7;
-      const jitterY = (Math.random()-0.5) * cellH * 0.7;
-      const left = c * cellW + cellW/2 + jitterX;
-      const top = r * cellH + cellH/2 + jitterY;
-      spots.push({left, top});
-    }
-  }
-  return spots;
-}
-
-function buildFlowers(){
-  const layer = document.getElementById('flowerLayer');
+function buildMilkyway(){
+  const layer = document.getElementById('milkywayLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const palette = [
-    ['#E8A0BF','#F2C14E'], ['#D8B4E2','#F2E14E'], ['#F0C9E0','#E8C468'],
-    ['#C9A0DC','#F7D6E0'], ['#F7B7C5','#F2C14E']
-  ];
-  const spots = gridPositions(10, 12);
-  let html = '';
-  spots.forEach(({left, top})=>{
-    const dur = 6+Math.random()*6, delay = Math.random()*6;
-    const size = 14 + Math.random()*26;
-    const [petalColor, centerColor] = palette[Math.floor(Math.random()*palette.length)];
-    html += `<div class="petal" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${flowerSVG(petalColor, centerColor)}</div>`;
-  });
-  layer.innerHTML = html;
-}
+  let html = '<div class="mw-band"></div><div class="mw-band2"></div>';
 
-function buildSunflowers(){
-  const layer = document.getElementById('sunflowerLayer');
-  if(layer.dataset.built) return;
-  layer.dataset.built = '1';
-  const spots = gridPositions(9, 11);
-  let html = '';
-  spots.forEach(({left, top})=>{
-    const dur = 6+Math.random()*6, delay = Math.random()*6;
-    const size = 16 + Math.random()*28;
-    const variant = Math.floor(Math.random()*4);
-    html += `<div class="sunflower" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;${randomDriftVars(14,8)}">${sunflowerSVG(variant)}</div>`;
-  });
-  layer.innerHTML = html;
-}
-
-function heartSVG(color){
-  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 34 C8 26 3 18 3 12.5 C3 6.5 8 3 13 3 C16.5 3 19 5 20 8 C21 5 23.5 3 27 3 C32 3 37 6.5 37 12.5 C37 18 32 26 20 34 Z" fill="${color}"/>
-  </svg>`;
-}
-
-function buildRain(){
-  const layer = document.getElementById('rainLayer');
-  if(layer.dataset.built) return;
-  layer.dataset.built = '1';
-  let html = '<div class="rain-flash" style="animation-duration:9s;"></div>';
+  // scattered dim stars everywhere, away from the band
   for(let i=0;i<90;i++){
-    const left = Math.random()*100, dur = 0.7+Math.random()*0.6, delay = Math.random()*3;
-    const h = 40 + Math.random()*40;
-    html += `<div class="rain-streak" style="left:${left.toFixed(2)}%;height:${h.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+    const top = Math.random()*100, left = Math.random()*100;
+    const size = 0.8 + Math.random()*0.8;
+    const dur = 3 + Math.random()*4, delay = Math.random()*5;
+    html += `<div class="star dim" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
   }
+
+  // a dense scatter of stars following the diagonal band (roughly -18deg)
+  for(let i=0;i<170;i++){
+    const left = Math.random()*130 - 15;
+    const bandCenter = 52 - left*0.33;
+    const top = bandCenter + (Math.random()*20 - 10);
+    const size = 1 + Math.random()*1.8;
+    const dur = 2 + Math.random()*3, delay = Math.random()*4;
+    const cls = Math.random() < 0.22 ? 'star bright' : 'star';
+    html += `<div class="${cls}" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
+  // a couple of shooting stars for extra sparkle
+  for(let i=0;i<3;i++){
+    const top = 5 + Math.random()*50, left = Math.random()*70;
+    const ang = 15 + Math.random()*20;
+    const dur = 7 + Math.random()*8, delay = Math.random()*14;
+    html += `<div class="shooting-star" style="top:${top}%;left:${left}%;--ang:${ang}deg;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
   layer.innerHTML = html;
 }
 
-function buildHearts(){
-  const layer = document.getElementById('heartsLayer');
+function buildStarsMoon(){
+  const layer = document.getElementById('starsmoonLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const colors = ['#E88CAA','#F2A6C0','#D96E93','#F7C1D6','#E05C82'];
-  const spots = gridPositions(6, 8); // full-screen coverage
   let html = '';
-  spots.forEach(({left, top})=>{
-    const dur = 3.5+Math.random()*3.5, delay = Math.random()*6;
-    const size = 14 + Math.random()*32; // small to big, randomized
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    html += `<div class="heart" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s;">${heartSVG(color)}</div>`;
-  });
+
+  for(let i=0;i<110;i++){
+    const top = Math.random()*100, left = Math.random()*100;
+    const size = 0.8 + Math.random()*1.4;
+    const dur = 2.2 + Math.random()*3.5, delay = Math.random()*5;
+    const roll = Math.random();
+    const cls = roll < 0.18 ? 'star bright' : (roll < 0.55 ? 'star' : 'star dim');
+    html += `<div class="${cls}" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
+  // glowing moon, tucked in a corner, with a few craters
+  html += `<div class="moon" style="top:9%;right:12%;width:78px;height:78px;">
+      <div class="moon-crater" style="top:20%;left:24%;width:14px;height:14px;"></div>
+      <div class="moon-crater" style="top:55%;left:55%;width:10px;height:10px;"></div>
+      <div class="moon-crater" style="top:62%;left:22%;width:8px;height:8px;"></div>
+    </div>`;
+
+  // soft drifting clouds passing near the moon
+  for(let i=0;i<4;i++){
+    const top = 15 + Math.random()*55;
+    const w = 90 + Math.random()*90, h = w*0.28;
+    const dur = 40 + Math.random()*30, delay = Math.random()*20;
+    html += `<div class="cloud" style="top:${top}%;left:${(Math.random()*60-10).toFixed(1)}%;width:${w}px;height:${h}px;animation-duration:${dur}s;animation-delay:-${delay}s;"></div>`;
+  }
+
   layer.innerHTML = html;
 }
 
-function buildFireflies(){
-  const layer = document.getElementById('firefliesLayer');
+/* a single stylized blooming sunflower, drawn as a dark silhouette */
+function sunflowerSilhouetteSVG(){
+  let petals = '';
+  for(let i=0;i<16;i++){
+    const rot = i * (360/16);
+    petals += `<ellipse cx="100" cy="38" rx="16" ry="34" transform="rotate(${rot} 100 70)"/>`;
+  }
+  return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#0d0910">
+      ${petals}
+      <circle cx="100" cy="70" r="30"/>
+      <path d="M100 100 C 90 150, 110 170, 100 220 C 95 235, 105 245, 100 258" stroke="#0d0910" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M100 158 C 70 153, 55 173, 40 168" stroke="#0d0910" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M100 190 C 130 185, 145 205, 160 200" stroke="#0d0910" stroke-width="8" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>`;
+}
+
+function buildSunflowerSil(){
+  const layer = document.getElementById('sunflowersilLayer');
   if(layer.dataset.built) return;
   layer.dataset.built = '1';
-  const spots = gridPositions(6, 7);
   let html = '';
-  spots.forEach(({left, top})=>{
-    const size = 4 + Math.random()*10;
-    const driftDur = 5+Math.random()*6, driftDelay = Math.random()*6;
-    const glowDur = 2+Math.random()*3, glowDelay = Math.random()*4;
-    html += `<div class="firefly" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;animation-duration:${driftDur}s,${glowDur}s;animation-delay:${driftDelay}s,${glowDelay}s;"></div>`;
+
+  // starry sky, denser toward the top
+  for(let i=0;i<130;i++){
+    const top = Math.random()*70, left = Math.random()*100;
+    const size = 0.8 + Math.random()*1.5;
+    const dur = 2.5 + Math.random()*4, delay = Math.random()*5;
+    const cls = Math.random() < 0.15 ? 'star bright' : 'star';
+    html += `<div class="${cls}" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+
+  // soft moonlit glow rising behind each flower
+  html += `<div class="sf-glow" style="bottom:2%;left:20%;width:220px;height:220px;background:radial-gradient(circle,#E8C468,transparent 70%);"></div>`;
+  html += `<div class="sf-glow" style="bottom:6%;left:56%;width:190px;height:190px;background:radial-gradient(circle,#B79CE0,transparent 70%);"></div>`;
+
+  // two blooming sunflower silhouettes at different sizes/positions
+  html += `<div class="sf-sil" style="left:6%;width:150px;height:195px;">${sunflowerSilhouetteSVG()}</div>`;
+  html += `<div class="sf-sil" style="left:50%;width:195px;height:254px;">${sunflowerSilhouetteSVG()}</div>`;
+
+  layer.innerHTML = html;
+}
+
+function buildGraffiti(){
+  const layer = document.getElementById('graffitiLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+
+  const tags = [
+    { text:'buchiii', color:'#E8C468', top:'13%', left:'8%',  size:'32px', rot:-6 },
+    { text:'mochiii', color:'#E88CAA', top:'42%', left:'44%', size:'28px', rot:4 },
+    { text:'cube',    color:'#9CD6E0', top:'70%', left:'10%', size:'36px', rot:-3 }
+  ];
+  let html = '';
+  tags.forEach(t=>{
+    const dripH = 14 + Math.random()*16;
+    html += `<div class="tag" style="top:${t.top};left:${t.left};font-size:${t.size};color:${t.color};transform:rotate(${t.rot}deg);text-shadow:0 0 10px ${t.color}55, 2px 2px 0 rgba(0,0,0,.4);">
+      ${t.text}
+      <span class="drip" style="height:${dripH}px;background:${t.color};opacity:.7;"></span>
+    </div>`;
   });
+
+  // scattered doodles: star, heart, music note, lightning bolt
+  const doodleColors = ['#F7F1E8','#B79CE0','#E8C468','#E88CAA'];
+  const doodleSVGs = [
+    c => `<svg viewBox="0 0 24 24" width="100%" height="100%"><path fill="${c}" d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7.1L12 17.8 5.8 21.3 7 14.2 2 9.3l7.1-.7z"/></svg>`,
+    c => `<svg viewBox="0 0 24 24" width="100%" height="100%"><path fill="${c}" d="M12 21s-7-4.6-9.5-9C.9 8.7 2.6 5 6 5c2 0 3.5 1.2 4 2.6C10.5 6.2 12 5 14 5c3.4 0 5.1 3.7 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>`,
+    c => `<svg viewBox="0 0 24 24" width="100%" height="100%"><path fill="none" stroke="${c}" stroke-width="1.4" d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3" fill="${c}"/><circle cx="17" cy="15" r="3" fill="${c}"/></svg>`,
+    c => `<svg viewBox="0 0 24 24" width="100%" height="100%"><path fill="${c}" d="M13 2L4 14h6l-1 8 10-13h-6z"/></svg>`
+  ];
+  for(let i=0;i<14;i++){
+    const top = Math.random()*90, left = Math.random()*90;
+    const size = 18 + Math.random()*22;
+    const rot = Math.random()*60 - 30;
+    const color = doodleColors[Math.floor(Math.random()*doodleColors.length)];
+    const svgFn = doodleSVGs[Math.floor(Math.random()*doodleSVGs.length)];
+    html += `<div class="doodle" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;transform:rotate(${rot}deg);">${svgFn(color)}</div>`;
+  }
+
   layer.innerHTML = html;
 }
 
@@ -1287,11 +1293,10 @@ function setTheme(theme){
     return;
   }
   if(theme === 'galaxy') buildGalaxy();
-  if(theme === 'flower') buildFlowers();
-  if(theme === 'sunflower') buildSunflowers();
-  if(theme === 'rain') buildRain();
-  if(theme === 'hearts') buildHearts();
-  if(theme === 'fireflies') buildFireflies();
+  if(theme === 'milkyway') buildMilkyway();
+  if(theme === 'stars_moon') buildStarsMoon();
+  if(theme === 'sunflower_silhouette') buildSunflowerSil();
+  if(theme === 'graffiti') buildGraffiti();
   themeBg.dataset.theme = theme;
   themeBg.classList.add('show');
 }
