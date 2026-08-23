@@ -183,12 +183,13 @@
     opacity:0;transition:opacity 1.1s ease;
   }
   .theme-bg.show{opacity:1;}
-  .galaxy-layer,.milkyway-layer,.starsmoon-layer,.sunflowersil-layer,.graffiti-layer{position:absolute;inset:0;display:none;}
+  .galaxy-layer,.milkyway-layer,.starsmoon-layer,.sunflowersil-layer,.graffiti-layer,.lanterns-layer{position:absolute;inset:0;display:none;}
   .theme-bg[data-theme="galaxy"] .galaxy-layer{display:block;}
   .theme-bg[data-theme="milkyway"] .milkyway-layer{display:block;}
   .theme-bg[data-theme="stars_moon"] .starsmoon-layer{display:block;}
   .theme-bg[data-theme="sunflower_silhouette"] .sunflowersil-layer{display:block;}
   .theme-bg[data-theme="graffiti"] .graffiti-layer{display:block;}
+  .theme-bg[data-theme="lanterns"] .lanterns-layer{display:block;}
 
   .star{position:absolute;border-radius:50%;background:#F7F1E8;animation:twinkle ease-in-out infinite;}
   .star.dim{background:#CFC6DC;}
@@ -270,6 +271,58 @@
     background:linear-gradient(180deg, rgba(10,8,14,.30) 0%, rgba(10,8,14,.10) 35%, rgba(10,8,14,.18) 65%, rgba(10,8,14,.48) 100%);
   }
 
+  /* ---- lanterns: real lantern photo, with paper-lantern shapes and warm
+     glow sparks drifting slowly upward on top, plus a soft vignette so
+     the mini vinyls/text stay readable ---- */
+  .lanterns-layer{
+    background-image:url('assets/backgrounds/Lanterns.jpg');
+    background-size:cover;
+    background-position:center;
+  }
+  .lanterns-layer::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(12,8,10,.30) 0%, rgba(12,8,10,.06) 35%, rgba(12,8,10,.14) 65%, rgba(12,8,10,.48) 100%);
+  }
+  /* small glowing paper-lantern body: rounded shape + darker cap/base rings
+     + soft halo, built purely in CSS (no image asset needed) */
+  .lantern{
+    position:absolute;
+    animation:lanternRise linear infinite, lanternSway ease-in-out infinite;
+  }
+  .lantern .halo{
+    position:absolute;inset:-60%;border-radius:50%;
+    filter:blur(9px);
+    background:radial-gradient(circle, var(--lg-color, rgba(255,190,110,.85)), transparent 68%);
+    animation:lanternGlow ease-in-out infinite;
+  }
+  .lantern .body{
+    position:relative;width:100%;height:100%;border-radius:46% 46% 40% 40% / 55% 55% 45% 45%;
+    background:linear-gradient(180deg, var(--lg-light, #FFDFA6) 0%, var(--lg-color, #FFA23D) 55%, var(--lg-dark, #E2711D) 100%);
+    box-shadow:0 0 10px 2px var(--lg-color, rgba(255,162,61,.55)), inset 0 -4px 6px rgba(0,0,0,.18), inset 0 3px 5px rgba(255,255,255,.35);
+  }
+  .lantern .cap{
+    position:absolute;left:50%;top:-14%;width:34%;height:16%;
+    background:#6b4a2a;border-radius:3px;transform:translateX(-50%);
+    box-shadow:0 -2px 3px rgba(0,0,0,.25);
+  }
+  .lantern .base{
+    position:absolute;left:50%;bottom:-12%;width:30%;height:12%;
+    background:#6b4a2a;border-radius:3px;transform:translateX(-50%);
+  }
+  .lantern .string{
+    position:absolute;left:50%;bottom:100%;width:1px;height:16px;
+    background:rgba(255,255,255,.25);transform:translateX(-50%);
+  }
+  @keyframes lanternRise{
+    0%{transform:translateY(0);}
+    100%{transform:translateY(-560px);}
+  }
+  @keyframes lanternSway{
+    0%,100%{margin-left:0;}
+    50%{margin-left:18px;}
+  }
+  @keyframes lanternGlow{0%,100%{opacity:.55;}50%{opacity:1;}}
+
   /* ---------- Flying vinyl swap clones ---------- */
   .vinyl-fly{
     position:fixed;z-index:50;object-fit:cover;pointer-events:none;
@@ -298,6 +351,7 @@
   <div class="starsmoon-layer" id="starsmoonLayer"></div>
   <div class="sunflowersil-layer" id="sunflowersilLayer"></div>
   <div class="graffiti-layer" id="graffitiLayer"></div>
+  <div class="lanterns-layer" id="lanternsLayer"></div>
 </div>
 
 <div class="app">
@@ -464,7 +518,7 @@ const ARTISTS = [
       { title: "Dandelions", from: "Ruth B", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-Dandelions.mp3", theme: "sunflower_silhouette" },
       { title: "Shinobi", from: "Just Hush", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-shinobi.mp3", theme: "graffiti" },
       { title: "Ipagdadamot Kita", from: "OLG Zak", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-ipagdadamotkita.mp3", theme: "graffiti" },
-      { title: "Dream Lanterns", from: "RADWIMPS", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-Dream.mp3", theme: "milkyway" },
+      { title: "Dream Lanterns", from: "RADWIMPS", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-Dream.mp3", theme: "lanterns" },
       { title: "Co-Pilot", from: "Jush Hush", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-copilot.mp3", theme: "graffiti" },
       { title: "Ikot", from: "Over October", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-ikot.mp3", theme: "milkyway" },
       { title: "My Day", from: "HellMerry", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-myday.mp3", theme: "graffiti" },
@@ -677,6 +731,54 @@ function buildGraffiti(){
   layer.innerHTML = html;
 }
 
+/* ---- lanterns: real lantern photo, plus small floating paper-lantern
+   shapes that slowly rise up the screen and sway side to side, with a
+   handful of soft warm glow sparks mixed in for depth ---- */
+function buildLanterns(){
+  const layer = document.getElementById('lanternsLayer');
+  if(layer.dataset.built) return;
+  layer.dataset.built = '1';
+  const palette = [
+    { color:'#FFA23D', light:'#FFDFA6', dark:'#E2711D' },
+    { color:'#FF7A5C', light:'#FFC9A6', dark:'#D9502E' },
+    { color:'#FFC94D', light:'#FFE9A8', dark:'#E0972A' },
+    { color:'#FF9E6B', light:'#FFDCC0', dark:'#D9713E' }
+  ];
+  let html = '';
+
+  // floating lantern shapes rising from the bottom, drifting past the top
+  for(let i=0;i<11;i++){
+    const p = palette[Math.floor(Math.random()*palette.length)];
+    const left = Math.random()*100;
+    const bottom = -10 - Math.random()*40; // staggered start below the frame
+    const size = 16 + Math.random()*16;
+    const riseDur = 16 + Math.random()*14;
+    const riseDelay = Math.random()*20;
+    const swayDur = 3.5 + Math.random()*3;
+    const swayDelay = Math.random()*4;
+    const glowDur = 2 + Math.random()*2.5;
+    const glowDelay = Math.random()*4;
+    html += `<div class="lantern" style="left:${left}%;bottom:${bottom}%;width:${size}px;height:${size*1.25}px;--lg-color:${p.color};--lg-light:${p.light};--lg-dark:${p.dark};animation-duration:${riseDur}s,${swayDur}s;animation-delay:${riseDelay}s,${swayDelay}s;">
+      <div class="string"></div>
+      <div class="cap"></div>
+      <div class="halo" style="animation-duration:${glowDur}s;animation-delay:${glowDelay}s;"></div>
+      <div class="body"></div>
+      <div class="base"></div>
+    </div>`;
+  }
+
+  // a few soft ambient glow sparks mixed through the scene for extra depth
+  for(let i=0;i<10;i++){
+    const top = 10 + Math.random()*80, left = Math.random()*100;
+    const size = 3 + Math.random()*5;
+    const driftDur = 5 + Math.random()*6, driftDelay = Math.random()*6;
+    const glowDur = 2 + Math.random()*3, glowDelay = Math.random()*4;
+    html += `<div class="firefly" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;background:radial-gradient(circle, rgba(255,206,140,.9), transparent 72%);animation-duration:${driftDur}s,${glowDur}s;animation-delay:${driftDelay}s,${glowDelay}s;"></div>`;
+  }
+
+  layer.innerHTML = html;
+}
+
 function setTheme(theme){
   if(!theme){
     themeBg.classList.remove('show');
@@ -687,6 +789,7 @@ function setTheme(theme){
   if(theme === 'stars_moon') buildStarsMoon();
   if(theme === 'sunflower_silhouette') buildSunflowerSil();
   if(theme === 'graffiti') buildGraffiti();
+  if(theme === 'lanterns') buildLanterns();
   themeBg.dataset.theme = theme;
   themeBg.classList.add('show');
 }
