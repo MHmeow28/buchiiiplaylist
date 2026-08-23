@@ -707,7 +707,7 @@ You look so cool" (one more line)
         title: "Everything Has Changed",
         from: "Red",
         cover: "assets/artists/Red.jpg",
-        audio: "assets/audio/taylorswift-everythinghaschanged.mp3",
+        audio: "assets/audio/taylorswift-everthinghaschanged.mp3",
         theme: "fireflies",
         lyrics:
 ``
@@ -1502,22 +1502,34 @@ function positionSongsArc(){
   if(!size) return;
 
   const center = size / 2;
-  const discSize = 44;
-  const gap = 14;
+  const n = discs.length;
+
+  // shrink discs a little once there are many songs, so spacing stays healthy
+  const baseDiscSize = 44;
+  const minDiscSize = 30;
+  const discSize = n <= 8 ? baseDiscSize : Math.max(minDiscSize, baseDiscSize - (n - 8) * 1.5);
+
+  const gap = 18; // space between turntable edge and nearest disc
   const radius = center + gap + discSize / 2;
 
-  const n = discs.length;
-  const spread = Math.min(150, 50 + n * 14); // total arc angle in degrees
+  // guarantee this much empty space between adjacent disc edges
+  const edgeGap = 10;
+  const minStepDeg = ((discSize + edgeGap) / radius) * (180 / Math.PI);
+  const spread = Math.min(260, minStepDeg * (n - 1 || 1));
   const start = -spread / 2;
   const step = n > 1 ? spread / (n - 1) : 0;
 
   discs.forEach((d, i) => {
-    const deg = start + step * i; // 0deg = straight up
+    const deg = start + step * i;
     const rad = deg * Math.PI / 180;
     const x = center + radius * Math.sin(rad);
     const y = center - radius * Math.cos(rad);
     d.style.left = x + 'px';
     d.style.top = y + 'px';
+    d.style.width = discSize + 'px';
+    d.style.height = discSize + 'px';
+    const ring = d.querySelector('.ring');
+    if(ring){ ring.style.width = discSize + 'px'; ring.style.height = discSize + 'px'; }
   });
 }
 
