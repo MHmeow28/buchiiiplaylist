@@ -124,10 +124,11 @@
   .song-disc img{width:60%;height:60%;border-radius:50%;object-fit:cover;}
 
   .neon-ring{
-    position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:2;
-    box-shadow:0 0 0 3px rgba(183,156,224,.6), 0 0 26px 6px rgba(183,156,224,.4);
+    position:absolute;inset:-16px;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle, rgba(183,156,224,.55), rgba(183,156,224,.16) 60%, transparent 75%);
+    filter:blur(6px);
     transform:scale(1);
-    transition:box-shadow .1s linear, transform .1s linear;
+    transition:transform .1s linear, opacity .1s linear;
   }
   .turntable{
     width:100%;max-width:280px;aspect-ratio:1/1;border-radius:50%;
@@ -547,8 +548,8 @@ function animateNeon(){
   for(let i=0;i<dataArray.length;i++) sum += dataArray[i];
   const level = sum / dataArray.length / 255; // 0..1
   const hue = 285 - level * 90; // grape -> hot pink/cyan as it gets louder
-  neonRing.style.transform = `scale(${1 + level*0.16})`;
-  neonRing.style.boxShadow = `0 0 0 3px hsla(${hue},85%,72%,${0.5 + level*0.4}), 0 0 ${18 + level*44}px ${6 + level*14}px hsla(${hue},85%,70%,${0.32 + level*0.5})`;
+  neonRing.style.transform = `scale(${1 + level*0.22})`;
+  neonRing.style.background = `radial-gradient(circle, hsla(${hue},85%,72%,${0.5 + level*0.4}), hsla(${hue},85%,68%,${0.18 + level*0.28}) 60%, transparent 75%)`;
   neonRaf = requestAnimationFrame(animateNeon);
 }
 
@@ -556,7 +557,7 @@ function resetNeon(){
   if(neonRaf) cancelAnimationFrame(neonRaf);
   neonRaf = null;
   neonRing.style.transform = 'scale(1)';
-  neonRing.style.boxShadow = '0 0 0 3px rgba(183,156,224,.6), 0 0 26px 6px rgba(183,156,224,.4)';
+  neonRing.style.background = 'radial-gradient(circle, rgba(183,156,224,.55), rgba(183,156,224,.16) 60%, transparent 75%)';
 }
 
 function fmt(s){
