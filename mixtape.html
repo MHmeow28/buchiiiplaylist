@@ -33,6 +33,12 @@
     position:relative;
   }
   .app{max-width:440px;width:100%;padding:34px 20px 50px;position:relative;z-index:1;}
+  body{min-height:100dvh;}
+  .app{min-height:100dvh;display:flex;flex-direction:column;}
+  .screen{width:100%;}
+  .screen.active{display:flex;flex-direction:column;flex:1;}
+  #screenArtists.active{display:block;flex:none;}
+  .player-center{flex:1;display:flex;flex-direction:column;justify-content:center;}
 
   .eyebrow{font-size:11px;letter-spacing:2px;color:var(--ink-soft);text-transform:uppercase;text-align:center;}
   h1{
@@ -376,42 +382,45 @@
         <img id="visitorAvatarImg" src="" alt="">
       </div>
     </div>
-    <div class="eyebrow" id="artistEyebrow">now playing</div>
-    <h1 id="artistTitle">Artist</h1>
 
-    <div class="rig">
-      <div class="turntable-stage">
-        <div class="songs-arc" id="songsRow"></div>
-        <div class="neon-ring" id="neonRing"></div>
-        <div class="turntable">
-          <div class="disc" id="disc">
-            <div class="cover-placeholder" id="coverPlaceholder">cover</div>
-            <img id="coverImg" src="" alt="">
+    <div class="player-center">
+      <div class="eyebrow" id="artistEyebrow">now playing</div>
+      <h1 id="artistTitle">Artist</h1>
+
+      <div class="rig">
+        <div class="turntable-stage">
+          <div class="songs-arc" id="songsRow"></div>
+          <div class="neon-ring" id="neonRing"></div>
+          <div class="turntable">
+            <div class="disc" id="disc">
+              <div class="cover-placeholder" id="coverPlaceholder">cover</div>
+              <img id="coverImg" src="" alt="">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="trackinfo">
-        <div class="name" id="trackName">Select a song</div>
-        <div class="from" id="trackFrom"></div>
-      </div>
-
-      <div class="transport">
-        <div class="progress-row">
-          <span class="time" id="tcur">0:00</span>
-          <div class="progress-track" id="progressTrack"><div class="progress-fill" id="fill"></div></div>
-          <span class="time end" id="tend">0:00</span>
+        <div class="trackinfo">
+          <div class="name" id="trackName">Select a song</div>
+          <div class="from" id="trackFrom"></div>
         </div>
-        <div class="controls">
-          <button id="prevBtn" aria-label="Previous">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM20 6L9 12l11 6z"/></svg>
-          </button>
-          <button class="play-btn" id="playBtn" aria-label="Play">
-            <svg id="playIcon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-          <button id="nextBtn" aria-label="Next">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2v12h2zM4 6l11 6-11 6z"/></svg>
-          </button>
+
+        <div class="transport">
+          <div class="progress-row">
+            <span class="time" id="tcur">0:00</span>
+            <div class="progress-track" id="progressTrack"><div class="progress-fill" id="fill"></div></div>
+            <span class="time end" id="tend">0:00</span>
+          </div>
+          <div class="controls">
+            <button id="prevBtn" aria-label="Previous">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM20 6L9 12l11 6z"/></svg>
+            </button>
+            <button class="play-btn" id="playBtn" aria-label="Play">
+              <svg id="playIcon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="nextBtn" aria-label="Next">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2v12h2zM4 6l11 6-11 6z"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
