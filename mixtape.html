@@ -102,17 +102,17 @@
 
   /* ---------- Mini vinyls arranged in an arc around the turntable ---------- */
   .rig{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:8px;}
-  .turntable-stage{position:relative;width:100%;max-width:280px;margin:58px auto 0;}
+  .turntable-stage{position:relative;width:100%;max-width:280px;margin:74px auto 0;}
 
   .songs-arc{position:absolute;inset:0;z-index:4;pointer-events:none;}
   .song-disc{
-    position:absolute;width:44px;text-align:center;cursor:pointer;
+    position:absolute;width:56px;text-align:center;cursor:pointer;
     pointer-events:auto;transform:translate(-50%,-50%);
     transition:transform .2s ease;
   }
   .song-disc:hover{transform:translate(-50%,-50%) scale(1.08);}
   .song-disc .ring{
-    width:44px;height:44px;border-radius:50%;
+    width:56px;height:56px;border-radius:50%;
     background:#0d0910;display:flex;align-items:center;justify-content:center;
     box-shadow:0 6px 14px rgba(0,0,0,.35);
     border:2px solid transparent;position:relative;
@@ -174,22 +174,6 @@
     width:44px;height:44px;border-radius:50%;
     background:var(--cream);color:#241329;
     display:flex;align-items:center;justify-content:center;
-  }
-
-  .lyrics-section{margin-top:22px;}
-  .lyrics-eyebrow{font-size:10px;letter-spacing:1.5px;color:var(--ink-soft);text-transform:uppercase;margin:0 0 8px 2px;}
-  .lyrics-wrap{
-    background:rgba(255,255,255,.04);border:1px solid var(--line);
-    border-radius:14px;padding:14px 18px;height:120px;overflow:hidden;position:relative;
-  }
-  .lyrics-wrap::after{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(180deg, rgba(18,14,23,.55), transparent 20%, transparent 80%, rgba(18,14,23,.55));
-  }
-  .lyrics-scroll{transition:transform .15s linear;}
-  .lyrics-scroll p{
-    font-family:'Fraunces',serif;font-style:italic;font-size:14px;line-height:1.85;
-    color:var(--ink-soft);margin:0 0 10px;
   }
 
   /* ---------- Themed magical backgrounds (behind the app) ---------- */
@@ -376,12 +360,6 @@
       </div>
     </div>
 
-    <div class="lyrics-section">
-      <div class="lyrics-eyebrow">lyrics</div>
-      <div class="lyrics-wrap">
-        <div class="lyrics-scroll" id="lyricsScroll"></div>
-      </div>
-    </div>
   </div>
 
 </div>
@@ -393,15 +371,6 @@
 <script>
 /* =====================================================================
    GATE CHECK — must run before anything else.
-
-   The confidential/name-check page sets a one-time sessionStorage flag
-   right before redirecting here. We check for it immediately: if it's
-   present, we consume it (remove it) and let the page load normally.
-   If it's missing — e.g. someone refreshed this page directly, opened
-   a bookmark, or shared this URL — we bounce back to the gate instead
-   of skipping the name check.
-
-   Adjust the filename below if your gate page isn't named index.html.
    ===================================================================== */
 (function enforceGate(){
   const GATE_PAGE = 'index.html';
@@ -412,51 +381,13 @@
       window.location.replace(GATE_PAGE);
     }
   }catch(e){
-    // sessionStorage unavailable for some reason — fail safe by sending
-    // people back to the gate rather than letting them straight in
     window.location.replace(GATE_PAGE);
   }
 })();
 
 /* =====================================================================
    EDIT ONLY THIS SECTION.
-
-   One object per artist. Each artist has a cover image (used on the
-   choose-artist page) and a list of songs. Each song needs:
-     - title
-     - from        (e.g. "chorus", "verse 1" — shows as a small subtitle)
-     - cover       (square jpg/png, used as the vinyl label + mini disc)
-     - audio       (mp3 clip)
-     - lyrics      (plain text, blank line between blocks so they scroll nicely)
-     - lyricsStart (OPTIONAL, in seconds) — the lyrics box stays still until
-                    playback reaches this point, then starts scrolling.
-                    Leave it out (or set to 0) for songs that should start
-                    scrolling immediately.
-     - theme       (OPTIONAL) — one of the five magical backgrounds:
-                      "galaxy"                — deep space, stars & nebula
-                      "milkyway"               — a dense diagonal star-band
-                      "stars_moon"             — starry sky with a glowing moon
-                      "sunflower_silhouette"   — two blooming sunflowers under a night sky
-                      "graffiti"               — spray-painted wall with names & doodles
-                    Leave it out for the plain background.
-
-                    NOTE: all five themes use real photos. Place your image
-                    files at (relative to this HTML file):
-                      assets/backgrounds/galaxy.jpg
-                      assets/backgrounds/milkyway.jpg
-                      assets/backgrounds/starsmoon.jpg
-                      assets/backgrounds/sunflower.png
-                      assets/backgrounds/graf.jpg
-                    or edit the url(...) paths in the matching -layer CSS
-                    rules above (search for "-layer{").
-
-   Add more artists by copying a whole { ... } block below.
-   Add more songs to an artist by copying a song block inside its songs: [...]
-   Remember: every song object needs a comma after its closing } EXCEPT
-   the very last one in the songs array.
    ===================================================================== */
-
-const LYRIC_SCROLL_SPEED = 1; // 1 = scrolls the full lyrics block across the (post-delay) song length, ending exactly on the last line. Increase only if you want it to finish early.
 
 const ARTISTS = [
   {
@@ -464,153 +395,9 @@ const ARTISTS = [
     name: "The 1975",
     cover: "assets/artists/the1975.jpg",
     songs: [
-      {
-        title: "About You",
-        from: "Being Funny in a Foreign Language",
-        cover: "assets/artists/the1975.jpg",
-        audio: "assets/audio/the1975-AboutYouu.mp3",
-        theme: "milkyway",
-        lyricsStart: 40, // seconds — lyrics box holds still until playback hits 0:40, then scrolls
-        lyrics: `I know a place
-It's somewhere I go when I need to remember your face
-We get married in our heads
-Something to do while we try to recall how we met
-
-Do you think I have forgotten?
-Do you think I have forgotten?
-Do you think I have forgotten about you?
-
-You and I (don't let go), we're alive (don't let go)
-With nothing to do, I could lay and just look in your eyes
-Wait (don't let go), and pretend (don't let go)
-Hold on, and hope that we'll find our way back in the end (in the end)
-
-Do you think I have forgotten?
-Do you think I have forgotten?
-Do you think I have forgotten about you?
-Do you think I have forgotten?
-Do you think I have forgotten?
-Do you think I have forgotten about you?
-
-And there was something 'bout you that now I can't remember
-It's the same damn thing that made my heart surrender
-And I miss you on a train, I miss you in the morning
-I never know what to think about
-I think about you (don't let go)
-About you (don't let go)
-
-Do you think I have forgotten about you? (Don't let go)
-About you
-About you
-Do you think I have forgotten about you? (Don't let go)`
-      },
-
-      {
-        title: "This Must Be my Dream",
-        from: "I like it when you sleep, for you are so beautiful yet so unaware of it",
-        cover: "assets/artists/ilikeit.jpg",
-        audio: "assets/audio/the1975-Dream.mp3",
-        theme: "galaxy",
-        lyricsStart: 20,
-        lyrics: `I personify the 'adolescent on a phone'
-speaking like I'm bigger than my body
-I personify that lack of freedom in your life
-And I'm sure she'll be gone in a second
-Let me tell you about this girl
-I thought she'd rearrange my world
-Takes a particular type of girl
-To put my heart under arrest
-So why is this feeling on my chest?
-(This must be my dream)
-Wide awake before I found you
-(This must be my dream)
-I can't wait for you, boy
-(Wake me from my dream)
-What does all our love amount to?
-(This must be my dream)
-We can't make love when you fly around me, baby
-Pipe down you're no lover
-It's failing 'cos you want it to
-Well I thought it was love
-But I guess I must be dreaming
-'Bout feeling something instead of you
-What did I tell you about this girl?
-The 'one to rearrange your world'
-You got excited
-And now you find out that your 'girl'
-Won't even get you undressed
-Or care about your beating chest
-(This must be my dream)
-Wide awake before I found you
-(This must be my dream)
-I can't wait for you, boy
-(Wake me from my dream)
-What does all our love amount to?
-(This must be my dream)
-We can't make love when you fly around me, baby
-(This must be my dream)
-Wide awake before I found you
-(This must be my dream)
-I can't wait for you, boy
-(Wake me from my dream)
-What does all our love amount to?
-(This must be my dream)
-We can't make love when you fly around me, baby
-(This must be my dream)
-Wide awake before I found you
-(This must be my dream)
-I can't wait for you, boy
-(Wake me from my dream)
-What does all our love amount to?
-(This must be my dream)
-We can't make love when you fly around me, baby`
-      },
-
-      {
-        title: "Robbers",
-        from: "The 1975",
-        cover: "assets/artists/the1975(1).jpg",
-        audio: "assets/audio/the1975-Robbers.mp3",
-        theme: "stars_moon",
-        lyricsStart: 40,
-        lyrics: `She had a face straight out a magazine
-God only knows, but you'll never leave her
-Her balaclava is starting to chafe
-And when she gets his gun
-He's begging, "Babe, stay, stay
-Stay, stay, stay"
-"I'll give you one more time
-We'll give you one more fight
-Said one more line
-Will I know you?"
-Now if you never shoot, you'll never know
-And if you never eat, you'll never grow
-You got a pretty kind of dirty face
-And when she's leaving your home
-She's begging you to stay, stay
-Stay, stay, stay
-"I'll give you one more time
-We'll give you one more fight
-Said one more line
-There'll be a riot 'cause I know you"
-Well, now that you've got your gun
-It's much harder now the police have come
-And I'll shoot him if it's what you ask
-But if you just take off your mask
-You'd find out everything's gone wrong
-Now everybody's dead
-And they're driving past my old school
-And he's got his gun
-And he's got his suit on
-She says, "Babe
-You look so cool
-You look so cool
-You look so cool
-You look so cool (one more time)
-You look so cool (one more fight)
-You look so cool" (one more line)
-('Cause I know you)`
-      }
+      { title: "About You", from: "Being Funny in a Foreign Language", cover: "assets/artists/the1975.jpg", audio: "assets/audio/the1975-AboutYouu.mp3", theme: "milkyway" },
+      { title: "This Must Be my Dream", from: "I like it when you sleep, for you are so beautiful yet so unaware of it", cover: "assets/artists/ilikeit.jpg", audio: "assets/audio/the1975-Dream.mp3", theme: "galaxy" },
+      { title: "Robbers", from: "The 1975", cover: "assets/artists/the1975(1).jpg", audio: "assets/audio/the1975-Robbers.mp3", theme: "stars_moon" }
     ]
   },
 
@@ -619,1071 +406,20 @@ You look so cool" (one more line)
     name: "Taylor Swift",
     cover: "assets/artists/1989.jpg",
     songs: [
-      {
-        title: "Our Song",
-        from: "Taylor Swift",
-        cover: "assets/artists/OurSong.jpg",
-        audio: "assets/audio/taylorswift-oursong.mp3",
-        theme: "galaxy",
-        lyrics:
-`I was riding shotgun
-With my hair undone
-In the front seat of his car
-He's got a one-hand feel
-On the steering wheel
-The other on my heart
-I look around, turn the radio down
-He says, "Baby, is something wrong?"
-I say, "Nothing
-I was just thinking
-How we don't have a song"
-And he says...
-
-Our song is the slamming screen door
-Sneakin' out late, tapping on your window
-When we're on the phone and you talk real slow
-'Cause it's late and your mama don't know
-Our song is the way you laugh
-The first date: "Man, I didn't kiss her, and I should have."
-And when I got home ... 'fore I said, "Amen"
-Asking God if he could play it again
-
-I was walking up
-The front porch steps
-After everything that day
-Had gone all wrong
-And been trampled on
-And lost and thrown away
-Got to the hallway,
-Well, on my way
-To my lovin' bed
-I almost didn't notice
-All the roses
-And the note that said...
-
-Our song is the slamming screen door
-Sneakin' out late, tapping on your window
-When we're on the phone and you talk real slow
-'Cause it's late and your mama don't know
-Our song is the way you laugh
-The first date: "Man, I didn't kiss her, and I should have"
-And when I got home ... 'fore I said, "Amen"
-Asking God if he could play it again
-
-I've heard every album, listened to the radio
-Waited for something to come along
-That was as good as our song...
-
-'Cause our song is the slamming screen door
-Sneakin' out late, tapping on his window
-When we're on the phone and he talks real slow
-'Cause it's late and his mama don't know
-Our song is the way he laughs
-The first date: "Man, I didn't kiss him, and I should have"
-And when I got home ... 'fore I said, "Amen"
-Asking God if he could play it again
-Play it again
-
-Oh, yeah...
-Oh-oh, yeah
-
-I was riding shotgun
-With my hair undone
-In the front seat of his car
-I grabbed a pen
-And an old napkin
-And I wrote down our song`
-      },
-      {
-        title: "Today Was A Fairytale",
-        from: "Fearless",
-        cover: "assets/artists/Fearless.jpg",
-        audio: "assets/audio/taylorswift-todaywasafairytale.mp3",
-        theme: "sunflower_silhouette",
-        lyrics:
-`Today was a fairytale
-You were the prince
-I used to be a damsel in distress
-You took me by the hand and you picked me up at six
-Today was a fairytale
-Today was a fairytale
-Today was a fairytale
-I wore a dress
-You wore a dark grey t-shirt
-You told me I was pretty when I looked like a mess
-Today was a fairytale
-
-Time slows down
-Whenever you're around
-
-Can you feel this magic in the air?
-It must have been the way you kissed me
-Fell in love when I saw you standing there
-It must have been the way
-Today was a fairytale
-It must have been the way
-Today was a fairytale
-
-Today was a fairytale
-You've got a smile
-That takes me to another planet
-Every move you make everything you say is right
-Today was a fairytale
-Today was a fairytale
-All that I can say
-Is now it's getting so much clearer
-Nothing made sense 'til the time I saw your face
-Today was a fairytale
-
-Time slows down
-Whenever you're around, yeah
-
-But can you feel this magic in the air?
-It must have been the way you kissed me
-Fell in love when I saw you standing there
-It must have been the way
-Today was a fairytale
-It must have been the way
-Today was a fairytale
-
-Time slows down
-Whenever you're around
-I can feel my heart
-It's beating in my chest
-Did you feel it?
-I can't put this down
-
-But can you feel this magic in the air?
-It must have been the way you kissed me
-Fell in love when I saw you standing there
-It must have been the way
-
-But can you feel this magic in the air?
-It must have been the way you kissed me
-Fell in love when I saw you standing there
-It must have been the way
-Today was a fairytale
-It must have been the way
-Today was a fairytale
-
-Today was a fairytale`
-      },
-      {
-        title: "Enchanted",
-        from: "Speak Now",
-        cover: "assets/artists/SpeakNow.jpg",
-        audio: "assets/audio/taylorswift-enchanted.mp3",
-        theme: "sunflower_silhouette",
-        lyrics:
-`There I was again tonight
-Forcing laughter, faking smiles
-Same old tired, lonely place
-Walls of insincerity
-Shifting eyes and vacancy
-Vanished when I saw your face
-All I can say is it was enchanting to meet you
-
-Your eyes whispered, "Have we met?"
-Across the room, your silhouette
-Starts to make its way to me
-The playful conversation starts
-Counter all your quick remarks
-Like passing notes in secrecy
-And it was enchanting to meet you
-All I can say is I was enchanted to meet you
-
-This night is sparklin', don't you let it go
-I'm wonderstruck, blushin' all the way home
-I'll spend forever wonderin' if you knew
-I was enchanted to meet you
-
-The lingering question kept me up
-2AM, who do you love?
-I wonder 'til I'm wide awake
-And now, I'm pacing back and forth
-Wishing you were at my door
-I'd open up and you would say
-"Hey, it was enchanting to meet you"
-All I know is I was enchanted to meet you
-
-This night is sparklin', don't you let it go
-I'm wonderstruck, blushin' all the way home
-I'll spend forever wonderin' if you knew
-This night is flawless, don't you let it go
-I'm wonderstruck, dancing around all alone
-I'll spend forever wonderin' if you knew
-I was enchanted to meet you
-
-This is me praying that
-This was the very first page
-Not where the storyline ends
-My thoughts will echo your name
-Until I see you again
-These are the words I held back
-As I was leaving too soon
-I was enchanted to meet you
-Please, don't be in love with someone else
-Please, don't have somebody waiting on you
-Please, don't be in love with someone else (Ooh)
-Please, don't have somebody waiting on you (Oh-oh)
-
-This night is sparklin', don't you let it go
-I'm wonderstruck, blushin' all the way home
-I'll spend forever wonderin' if you knew
-This night is flawless (Please, don't be in love with someone else)
-Don't you let it go
-I'm wonderstruck (Please, don't have somebody waiting on you)
-Dancing around all alone
-I'll spend forever (Please, don't be in love with someone else)
-Wonderin' if you knew
-I was enchanted to meet you
-
-Please, don't be in love with someone else
-Please, don't have somebody waiting on you`
-      },
-
-      {
-        title: "Mirrorball",
-        from: "Folklore",
-        cover: "assets/artists/folklore.png",
-        audio: "assets/audio/taylorswift-Mirrorball.mp3",
-        theme: "milkyway",
-        lyrics:
-`I want you to know
-I'm a mirrorball
-I'll show you every version of yourself tonight
-I'll get you out on the floor
-Shimmering beautiful
-And when I break it's in a million pieces
-
-Hush
-When no one is around, my dear
-You'll find me on my tallest tiptoes
-Spinning in my highest heels, love
-Shining just for you
-Hush
-I know they said the end is near
-But I'm still on my tallest tiptoes
-Spinning in my highest heels, love
-Shining just for you
-
-I want you to know
-I'm a mirrorball
-I can change everything about me to fit in
-You are not like the regulars
-The masquerade revelers
-Drunk as they watch my shattered edges glisten
-
-Hush
-When no one is around, my dear
-You'll find me on my tallest tiptoes
-Spinning in my highest heels, love
-Shining just for you
-Hush
-I know they said the end is near
-But I'm still on my tallest tiptoes
-Spinning in my highest heels, love
-Shining just for you
-
-And they called off the circus
-Burned the disco down
-When they sent home the horses
-And the rodeo clowns
-I'm still on that tightrope
-I'm still trying everything to get you laughing at me
-I'm still a believer but I don't know why
-I've never been a natural
-All I do is try, try, try
-I'm still on that trapeze
-I'm still trying everything
-To keep you looking at me
-
-Because I'm a mirrorball
-I'm a mirrorball
-I'll show you every version of yourself
-Tonight
-`
-      },
-
-      {
-        title: "Down Bad",
-        from: "The Tortured Poets Department",
-        cover: "assets/artists/poets.png",
-        audio: "assets/audio/taylorswift-downbad.mp3",
-        theme: "stars_moon",
-        lyrics:
-`Did you really beam me up?
-In a cloud of sparkling dust
-Just to do experiments on
-Tell me I was the chosen one
-Show me that this world is bigger than us
-Then sent me back where I came from
-For a moment, I knew cosmic love
-
-Now I'm down bad, crying at the gym
-Everything comes out teenage petulance
-"Fuck it if I can't have him"
-"I might just die, it would make no difference"
-Down bad, waking up in blood
-Staring at the sky, come back and pick me up
-Fuck it if I can't have us
-I might just not get up
-I might stay down bad
-
-Fuck it if I can't have him
-Down bad
-Fuck it if I can't have him
-
-Did you take all my old clothes?
-Just to leave me here naked and alone
-In a field in my same old town
-That somehow seems so hollow now
-They'll say I'm nuts if I talk about the existence of you
-For a moment, I was heaven struck
-
-Now I'm down bad, crying at the gym (Crying at the gym)
-Everything comes out teenage petulance
-"Fuck it if I can't have him" (Fuck it if I can't have him)
-"I might just die, it would make no difference"
-Down bad, waking up in blood (Waking up in blood)
-Staring at the sky, come back and pick me up
-Fuck it if I can't have us
-I might just not get up
-I might stay down bad
-
-Like I lost my twin
-Fuck it if I can't have him (Down bad)
-Down bad
-Waving at the ship
-Fuck it if I can't have him
-
-I loved your hostile takeovers
-Encounters closer and closer
-All your indecent exposures
-How dare you say that it's-
-I'll build you a fort on some planet
-Where they can all understand it
-How dare you think it's romantic
-Leaving me safe and stranded
-'Cause fuck it, I was in love
-So fuck you if I can't have us
-'Cause fuck it, I was in love
-
-Now I'm down bad, crying at the gym (Crying at the gym)
-Everything comes out teenage petulance
-"Fuck it if I can't have him" (Can't have him)
-"I might just die, it would make no difference"
-Down bad, waking up in blood (Waking up in blood)
-Staring at the sky, come back and pick me up
-Fuck it if I can't have us
-I might just not get up
-I might stay down bad
-
-Like I lost my twin
-Fuck it if I can't have him (Down bad)
-Down bad
-Waving at the ship
-Fuck it if I can't have him
-
-Like I lost my twin
-Fuck it if I can't have him
-Down bad
-Waving at the ship
-Fuck it if I can't have him`
-      },
-      
-      {
-        title: "The Very First Night",
-        from: "Red",
-        cover: "assets/artists/Red.jpg",
-        audio: "assets/audio/taylorswift-theveryfirstnight.mp3",
-        theme: "galaxy",
-        lyrics:
-`I wish I could fly
-I'd pick you up and we'd go back in time
-I'd write this in the sky
-I miss you like it was the very first night
-
-And so it goes
-Every weekend, this same party
-I never go alone and I don't seem brokenhearted
-My friends all say they know everything I'm going through
-I drive down different roads
-But they all lead back to you
-'Cause they don't know about the night in the hotel
-They weren't riding in the car when we both fell
-Didn't read the note on the Polaroid picture
-They don't know how much I miss you
-
-I wish I could fly
-I'd pick you up and we'd go back in time
-I'd write this in the sky
-I miss you like it was the very first night
-
-And so it was
-We never saw it coming
-Not trying to fall in love
-But we did like children running
-Back then we didn't know we were built to fall apart
-We broke the status quo, then we broke each other's hearts
-But don't forget about the night out in LA
-Danced in the kitchen, chased me down through the hallway
-No one knows about the words that we whispered
-No one knows how much I miss you
-
-I wish I could fly
-I'd pick you up and we'd go back in time
-I'd write this in the sky
-I miss you like it was the very first night
-
-Take me away, take me away
-Take me away to you, to you
-Take me away, take me away
-Take me away to you, to you
-
-I remember the night at the hotel
-I was riding in the car when we both fell
-I'm the one on the phone as you whisper
-"Do you know how much I miss you?"
-I wish that we could go back in time
-And I'd say to you
-"I miss you like it was the very first night"
-
-I wish I could fly
-I'd pick you up and we'd go back in time
-I'd write this in the sky
-I miss you like it was the very first night
-Take me away, take me away
-Take me away to you, to you
-Take me away, take me away
-Take me away to you, to you`
-      },
-
-{
-        title: "Never Grow Up",
-        from: "Speak Now",
-        cover: "assets/artists/SpeakNow.jpg",
-        audio: "assets/audio/taylorswift-nevergrowup.mp3",
-        theme: "milkyway",
-        lyrics:
-`Your little hand's wrapped around my finger
-And it's so quiet in the world tonight
-Your little eyelids flutter 'cause you're dreaming
-So I tuck you in, turn on your favourite nightlight
-
-To you, everything's funny
-You got nothing to regret
-I'd give all I have, honey
-If you could stay like that
-
-Oh, darling, don't you ever grow up
-Don't you ever grow up, just stay this little
-Oh, darling, don't you ever grow up
-Don't you ever grow up, it could stay this simple
-I won't let nobody hurt you
-Won't let no one break your heart
-And no one will desert you
-Just try to never grow up
-
-Never grow up
-
-You're in the car, on the way to the movies
-And you're mortified your mom's dropping you off
-At fourteen, there's just so much you can't do
-And you can't wait to move out someday and call your own shots
-
-But don't make her drop you off around the block
-Remember that she's gettin' older, too
-And don't lose the way that you dance around
-In your PJs getting ready for school
-
-Oh, darling, don't you ever grow up
-Don't you ever grow up, just stay this little
-Oh, darling, don't you ever grow up
-Don't you ever grow up, it could stay this simple
-No one's ever burned you
-Nothing's ever left you scarred
-And even though you want to
-Just try to never grow up
-
-Take pictures in your mind of your childhood room
-Memorize what it sounded like when your dad gets home
-Remember the footsteps, remember the words said
-And all your little brother's favorite songs
-I just realized everything I have is, someday, gonna be gone
-
-So, here I am in my new apartment
-In a big city, they just dropped me off
-It's so much colder than I thought it would be
-So I tuck myself in and turn my nightlight on
-
-Wish I'd never grown up
-I wish I'd never grown up
-Oh, I don't wanna grow up
-Wish I'd never grown up, I could still be little
-Oh, I don't wanna grow up
-Wish I'd never grown up, it could still be simple
-Oh, darling, don't you ever grow up
-Don't you ever grow up, just stay this little
-Oh, darlin', don't you ever grow up
-Don't you ever grow up, it could stay this simple
-I won't let nobody hurt you (Never grow up)
-Won't let no one break your heart
-And even though you want to
-Please, try to never grow up
-
-Oh, oh (Never grow up)
-Don't you ever grow up
-Oh (Never grow up)
-Just never grow up`
-      },
-      
-      {
-        title: "Style",
-        from: "1989",
-        cover: "assets/artists/1989.jpg",
-        audio: "assets/audio/taylorswift-style.mp3",
-        theme: "milkyway",
-        lyrics:
-`Midnight
-You come and pick me up, no headlights
-Long drive
-Could end in burning flames or paradise
-Fade into view, oh
-It's been a while since I have even heard from you (Heard from you)
-
-I should just tell you to leave, 'cause I
-Know exactly where it leads, but I
-Watch us go 'round and 'round each time
-
-You got that James Dean daydream look in your eye
-And I got that red lip classic thing that you like
-And when we go crashing down, we come back every time
-'Cause we never go out of style
-We never go out of style
-
-You got that long hair slicked back, white t-shirt
-And I got that good girl faith and a tight little skirt
-And when we go crashing down, we come back every time
-'Cause we never go out of style
-We never go out of style
-
-So it goes
-He can't keep his wild eyes on the road
-Takes me home
-Lights are off, he's takin' off his coat, mmm, yeah
-I say, "I heard, oh
-That you've been out and about with some other girl
-Some other girl"
-
-He says, "What you heard is true, but I
-Can't stop thinking 'bout you and I"
-I said, "I've been there too a few times"
-
-'Cause you got that James Dean daydream look in your eye
-And I got that red lip classic thing that you like
-And when we go crashing down, we come back every time
-'Cause we never go out of style
-We never go out of style
-
-You got that long hair slicked back, white t-shirt
-And I got that good girl faith and a tight little skirt (A tight little skirt)
-And when we go crashing down, we come back every time
-'Cause we never go out of style (We never go, we never go)
-We never go out of style
-
-Take me home
-Just take me home
-Yeah, just take me home, oh (Out of style)
-
-'Cause you got that James Dean daydream look in your eye
-And I got that red lip classic thing that you like
-And when we go crashing down, we come back every time
-'Cause we never go out of style
-We never go out of style`
-      },
-      {
-        title: "Call It What You Want",
-        from: "Reputation",
-        cover: "assets/artists/Reputation.jpg",
-        audio: "assets/audio/taylorswift-callitwhatyouwant.mp3",
-        theme: "stars_moon",
-        lyrics:
-`My castle crumbled overnight
-I brought a knife to a gunfight
-They took the crown but it's alright
-All the liars are calling me one
-Nobody's heard from me for months
-I'm doing better than I ever was
-
-'Cause
-My baby's fit like a daydream
-Walking with his head down
-I'm the one he's walking to
-So call it what you want, yeah
-Call it what you want to
-My baby's fly like a jet stream
-High above the whole scene
-Loves me like I'm brand new
-So call it what you want, yeah
-Call it what you want to
-
-All my flowers grew back as thorns
-Windows boarded up after the storm
-He built a fire just to keep me warm
-All the drama queens taking swings
-All the jokers dressing up as kings
-They fade to nothing when I look at him
-And I know I make the same mistakes every time
-Bridges burn, I never learn
-At least I did one thing right
-I did one thing right
-I'm laughing with my lover
-Making forts under covers
-Trust him like a brother
-Yeah, you know I did one thing right
-Starry eyes sparking up my darkest night
-
-My baby's fit like a daydream
-Walking with his head down
-I'm the one he's walking to
-So call it what you want, yeah
-Call it what you want to
-My baby's fly like a jet stream
-High above the whole scene
-Loves me like I'm brand new
-(Call it what you want, call it what you want, call it)
-So call it what you want, yeah
-Call it what you want to
-
-I want to wear his initial on a chain 'round my neck
-Chain 'round my neck
-Not because he owns me
-But 'cause he really knows me
-Which is more than they can say, I
-I recall late November, holding my breath
-Slowly I said, "You don't need to save me
-But would you run away with me?"
-Yes (would you run away?)
-
-My baby's fit like a daydream
-Walking with his head down
-I'm the one he's walking to
-(Call it what you want, call it what you want, call it)
-So call it what you want, yeah
-Call it what you want to
-My baby's fly like a jet stream
-High above the whole scene
-Loves me like I'm brand new
-(Call it what you want, call it what you want, call it)
-So call it what you want, yeah
-Call it what you want to
-
-(Call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-(Call it what you want, call it what you want, call it)
-Call it what you want, yeah
-Call it what you want
-To`
-      },
-
-      {
-        title: "Cornelia Street",
-        from: "Lover",
-        cover: "assets/artists/Lover.jpg",
-        audio: "assets/audio/taylorswift-corneliastreet.mp3",
-        theme: "milkyway",
-        lyrics:
-`We were in the backseat
-Drunk on something stronger than the drinks in the bar
-"I rent a place on Cornelia Street"
-I say casually in the car
-We were a fresh page on the desk
-Filling in the blanks as we go
-As if the street lights pointed in an arrow head
-Leading us home
-
-And I hope I never lose you, hope it never ends
-I'd never walk Cornelia Street again
-That's the kinda heartbreak time could never mend
-I'd never walk Cornelia Street again
-And baby, I get mystified by how this city screams your name
-And baby, I'm so terrified of if you ever walk away
-I'd never walk Cornelia Street again
-I'd never walk Cornelia Street again
-
-Windows flung right open, autumn air
-Jacket 'round my shoulders is yours
-We bless the rains on Cornelia Street
-Memorize the creaks in the floor
-Back when we were card sharks, playing games
-I thought you were leading me on
-I packed my bags, left Cornelia Street
-Before you even knew I was gone
-
-But then you called, showed your hand
-I turned around before I hit the tunnel
-Sat on the roof, you and I
-
-I hope I never lose you, hope it never ends
-I'd never walk Cornelia Street again
-That's the kinda heartbreak time could never mend
-I'd never walk Cornelia Street again
-And baby, I get mystified by how this city screams your name
-And baby, I'm so terrified of if you ever walk away
-I'd never walk Cornelia Street again
-I'd never walk Cornelia Street again
-
-You hold my hand on the street
-Walk me back to that apartment
-Years ago, we were just inside
-Barefoot in the kitchen
-Sacred new beginnings
-That became my religion, listen
-
-I hope I never lose you
-I'd never walk Cornelia Street again
-Oh, never again
-And baby, I get mystified by how this city screams your name
-And baby, I'm so terrified of if you ever walk away
-I'd never walk Cornelia Street again
-I'd never walk Cornelia Street again
-
-I don't wanna lose you (Hope it never ends)
-I'd never walk Cornelia Street again
-I don't wanna lose you (Yeah)
-
-"I rent a place on Cornelia Street"
-I say casually in the car`
-      },
-
-       {
-        title: "Delicate",
-        from: "Reputation",
-        cover: "assets/artists/Reputation.jpg",
-        audio: "assets/audio/taylorswift-delicate.mp3",
-        theme: "galaxy",
-        lyrics:
-`This ain't for the best
-My reputation's never been worse, so
-You must like me for me
-We can't make
-Any promises now, can we, babe?
-But you can make me a drink
-
-Dive bar on the East Side, where you at?
-Phone lights up my nightstand in the black
-Come here, you can meet me in the back
-Dark jeans and your Nikes, look at you
-Oh damn, never seen that color blue
-Just think of the fun things we could do
-
-'Cause I like you
-This ain't for the best
-My reputation's never been worse, so
-You must like me for me
-Yeah, I want you
-We can't make
-Any promises now, can we, babe?
-But you can make me a drink
-
-Is it cool that I said all that?
-Is it chill that you're in my head?
-'Cause I know that it's delicate (delicate)
-Is it cool that I said all that?
-Is it too soon to do this yet?
-'Cause I know that it's delicate
-Isn't it? Isn't it? Isn't it?
-Isn't it?
-Isn't it? Isn't it? Isn't it?
-Isn't it?
-Delicate
-
-Third floor on the West Side, me and you
-Handsome, you're a mansion with a view
-Do the girls back home touch you like I do?
-Long night, with your hands up in my hair
-Echoes of your footsteps on the stairs
-Stay here, honey, I don't wanna share
-
-'Cause I like you
-This ain't for the best
-My reputation's never been worse, so
-You must like me for me
-Yeah, I want you
-We can't make
-Any promises now, can we, babe?
-But you can make me a drink
-
-Is it cool that I said all that?
-Is it chill that you're in my head?
-'Cause I know that it's delicate (delicate)
-Is it cool that I said all that?
-Is it too soon to do this yet?
-'Cause I know that it's delicate
-Isn't it? Isn't it? Isn't it?
-Isn't it?
-Isn't it? Isn't it? Isn't it?
-Isn't it?
-Delicate
-
-Sometimes I wonder when you sleep
-Are you ever dreaming of me?
-Sometimes when I look into your eyes
-I pretend you're mine, all the damn time
-'Cause I like you
-
-Is it cool that I said all that?
-Is it chill that you're in my head?
-'Cause I know that it's delicate (delicate)
-Yeah, I want you
-Is it cool that I said all that?
-Is it too soon to do this yet?
-'Cause I know that it's delicate (delicate)
-'Cause I like you
-Is it cool that I said all that?
-Isn't it? Isn't it? Isn't it? Isn't it?
-Is it chill that you're in my head?
-Isn't it? Isn't it? Isn't it? Isn't it?
-'Cause I know that it's delicate
-Isn't it? Isn't it? Isn't it? Isn't it?
-(Yeah, I want you)
-Is it cool that I said all that?
-Isn't it? Isn't it? Isn't it? Isn't it?
-Is it too soon to do this yet?
-Isn't it? Isn't it? Isn't it?
-'Cause I know that it's delicate
-(Isn't it?)
-Delicate`
-      },
-
-      {
-        title: "Everything Has Changed",
-        from: "Red",
-        cover: "assets/artists/Red.jpg",
-        audio: "assets/audio/taylorswift-everthinghaschanged.mp3",
-        theme: "milkyway",
-        lyrics:
-`All I knew this morning when I woke
-Is I know something now
-Know something now I didn't before
-And all I've seen since 18 hours ago
-Is green eyes and freckles and your smile
-In the back of my mind, making me feel like
-
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you, know you, know you
-
-'Cause all I know is we said, "Hello"
-And your eyes look like coming home
-All I know is a simple name
-Everything has changed
-All I know is you held the door
-You'll be mine and I'll be yours
-All I know since yesterday
-Is everything has changed
-
-And all my walls stood tall, painted blue
-But I'll take 'em down, take 'em down
-And open up the door for you
-And all I feel in my stomach is butterflies
-The beautiful kind, making up for lost time
-Taking flight, making me feel right
-
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you, know you, know you
-
-'Cause all I know is we said, "Hello"
-And your eyes look like coming home
-All I know is a simple name
-Everything has changed
-All I know is you held the door
-You'll be mine and I'll be yours
-All I know since yesterday
-Is everything has changed
-
-Come back and tell me why
-I'm feeling like I've missed you all this time
-And meet me there tonight
-And let me know that it's not all in my mind
-
-I just wanna know you better
-Know you better, know you better now
-I just wanna know you, know you, know you
-
-All I know is we said, "Hello"
-And your eyes look like coming home
-All I know is a simple name
-Everything has changed
-All I know is you held the door
-And you'll be mine and I'll be yours
-All I know since yesterday
-Is everything has changed
-
-All I know is we said, "Hello"
-So dust off your highest hopes
-All I know is pouring rain
-And everything has changed
-All I know is a new found grace
-All my days, I'll know your face
-All I know since yesterday
-Is everything has changed`
-      },
-
-      {
-        title: "Ruin The Friendship",
-        from: "The Life of a Showgirl",
-        cover: "assets/artists/showgirl.png",
-        audio: "assets/audio/taylorswift-ruinthefriendship.mp3",
-        theme: "stars_moon",
-        lyrics:
-`Glistening grass from September rain
-Gray overpass full of neon names
-You drive 85
-Gallatin Road and the lakeside beach
-Watching the game from your brother's Jeep
-Your smile, miles wide
-
-And it was not an invitation
-Should've kissed you anyway
-Should've kissed you anyway
-And it was not convenient, no
-But your girlfriend was away
-Should've kissed you anyway, hey
-
-Shiny wood floors underneath my feet
-Disco ball makes everything look cheap
-Have fun, it's prom
-Wilted corsage dangles from my wrist
-Over his shoulder, I catch a glimpse
-And see you looking at me
-
-And it was not an invitation
-But as the 50 Cent song played (Song played)
-Should've kissed you anyway (Anyway)
-And it was not convenient, no (It was not convenient)
-Would've been the best mistake
-Should've kissed you anyway, hey
-
-Don't make it awkward in second period
-Might piss your ex off, lately we've been good
-Staying friends is safe, doesn't mean you should
-Don't make it awkward in second period
-Might piss your ex off, lately we've been good
-Staying friends is safe, doesn't mean you should
-
-When I left school, I lost track of you
-Abigail called me with the bad news
-Goodbye, and we'll never know why
-
-It was not an invitation
-But I flew home anyway
-With so much left to say
-It was not convenient, no
-But I whispered at the grave
-"Should've kissed you anyway"
-
-Oh, and it was not an invitation (It was not an invitation)
-Should've kissed you anyway (Anyway)
-Should've kissed you anyway, anyway (Anyway)
-And it was not—
-
-My advice is always ruin the friendship
-Better that than regret it for all time
-Should've kissed you anyway
-And my advice is always answer the question
-Better that than to ask it all your life
-Should've kissed you anyway
-Should've kissed you anyway`
-      },
-      
-      {
-        title: "Daylight",
-        from: "Lover",
-        cover: "assets/artists/Lover.jpg",
-        audio: "assets/audio/taylorswift-daylight.mp3",
-        theme: "sunflower_silhouette",
-        lyrics:
-`My love was as cruel as the cities I lived in
-Everyone looked worse in the light
-There are so many lines that I've crossed unforgiven
-I'll tell you the truth, but never goodbye
-
-I don't wanna look at anything else now that I saw you
-I don't wanna think of anything else now that I thought of you
-I've been sleeping so long in a twenty-year dark night
-And now I see daylight, I only see daylight
-
-Luck of the draw only draws the unlucky
-And so I became the butt of the joke
-I wounded the good and I trusted the wicked
-Clearing the air, I breathed in the smoke
-Maybe you ran with the wolves and refused to settle down
-Maybe I've stormed out of every single room in this town
-Threw out our cloaks and our daggers because it's morning now
-It's brighter now, now
-
-I don't wanna look at anything else now that I saw you
-(I can never look away)
-I don't wanna think of anything else now that I thought of you
-(Things will never be the same)
-I've been sleeping so long in a twenty-year dark night
-(Now I'm wide awake)
-And now I see daylight (daylight), I only see daylight (daylight)
-I only see daylight, daylight, daylight, daylight
-I only see daylight, daylight, daylight, daylight
-
-And I can still see it all (In my mind)
-All of you, all of me (Intertwined)
-I once believed love would be (Black and white)
-But it's golden (Golden)
-And I can still see it all (In my head)
-Back and forth from New York (Sneaking in your bed)
-I once believed love would be (Burning red)
-But it's golden
-Like daylight, like daylight
-Like daylight, daylight
-
-I don't wanna look at anything else now that I saw you
-(I can never look away)
-I don't wanna think of anything else now that I thought of you
-(Things will never be the same)
-I've been sleeping so long in a twenty-year dark night
-(Now I'm wide awake)
-And now I see daylight (I see daylight), I only see daylight (Ah)
-I only see daylight, daylight, daylight, daylight
-I only see daylight, daylight, daylight, daylight (Ah)
-(And I can still see it all)
-I only see daylight, daylight, daylight, daylight
-(And I can still see it all, back and forth from New York)
-I only see daylight, daylight, daylight, daylight
-(I once believed love would be burning red)
-
-Like daylight
-It's golden like daylight
-You gotta step into the daylight and let it go
-Just let it go, let it go
-I wanna be defined by the things that I love
-Not the things I hate
-Not the things that I'm afraid of, I'm afraid of
-Not the things that haunt me in the middle of the night
-I, I just think that
-You are what you love`
-      }
+      { title: "Our Song", from: "Taylor Swift", cover: "assets/artists/OurSong.jpg", audio: "assets/audio/taylorswift-oursong.mp3", theme: "galaxy" },
+      { title: "Today Was A Fairytale", from: "Fearless", cover: "assets/artists/Fearless.jpg", audio: "assets/audio/taylorswift-todaywasafairytale.mp3", theme: "sunflower_silhouette" },
+      { title: "Enchanted", from: "Speak Now", cover: "assets/artists/SpeakNow.jpg", audio: "assets/audio/taylorswift-enchanted.mp3", theme: "sunflower_silhouette" },
+      { title: "Mirrorball", from: "Folklore", cover: "assets/artists/folklore.png", audio: "assets/audio/taylorswift-Mirrorball.mp3", theme: "milkyway" },
+      { title: "Down Bad", from: "The Tortured Poets Department", cover: "assets/artists/poets.png", audio: "assets/audio/taylorswift-downbad.mp3", theme: "stars_moon" },
+      { title: "The Very First Night", from: "Red", cover: "assets/artists/Red.jpg", audio: "assets/audio/taylorswift-theveryfirstnight.mp3", theme: "galaxy" },
+      { title: "Never Grow Up", from: "Speak Now", cover: "assets/artists/SpeakNow.jpg", audio: "assets/audio/taylorswift-nevergrowup.mp3", theme: "milkyway" },
+      { title: "Style", from: "1989", cover: "assets/artists/1989.jpg", audio: "assets/audio/taylorswift-style.mp3", theme: "milkyway" },
+      { title: "Call It What You Want", from: "Reputation", cover: "assets/artists/Reputation.jpg", audio: "assets/audio/taylorswift-callitwhatyouwant.mp3", theme: "stars_moon" },
+      { title: "Cornelia Street", from: "Lover", cover: "assets/artists/Lover.jpg", audio: "assets/audio/taylorswift-corneliastreet.mp3", theme: "milkyway" },
+      { title: "Delicate", from: "Reputation", cover: "assets/artists/Reputation.jpg", audio: "assets/audio/taylorswift-delicate.mp3", theme: "galaxy" },
+      { title: "Everything Has Changed", from: "Red", cover: "assets/artists/Red.jpg", audio: "assets/audio/taylorswift-everthinghaschanged.mp3", theme: "milkyway" },
+      { title: "Ruin The Friendship", from: "The Life of a Showgirl", cover: "assets/artists/showgirl.png", audio: "assets/audio/taylorswift-ruinthefriendship.mp3", theme: "stars_moon" },
+      { title: "Daylight", from: "Lover", cover: "assets/artists/Lover.jpg", audio: "assets/audio/taylorswift-daylight.mp3", theme: "sunflower_silhouette" }
     ]
   },
 
@@ -1692,168 +428,13 @@ You are what you love`
     name: "The Ridleys",
     cover: "assets/artists/Reflections.jpg",
     songs: [
-      {
-        title: "Aphrodite",
-        from: "Reflections on Moonlight & Poetry",
-        cover: "assets/artists/Reflections.jpg",
-        audio: "assets/audio/TR-Aphrodite.mp3",
-        theme: "galaxy",
-        lyrics: `You're the moon that glows in the sky
-Lighting up the world when it's blue
-Stars they dance, though late in the night
-Don't you know they dance just for you?
-
-There you are, above darkened clouds
-Smiling at the world from afar
-With the stars, you wander around
-May they follow you wherever you are
-
-Here I am, just another boy
-Singing songs that others have sung
-Tryna find the words to employ
-To adore the goddess of love
-
-Oh, woah, you've got me in a daze, yeah
-No, woah, it's not another phase
-You gave me one look and now I can't get my mind off of you
-And it's all because
-
-I see the galaxies when I look in your eyes
-And I can't speak, no I can't speak at all
-I swear to Zeus, you're Aphrodite in disguise
-Don't think that you can hide it from me
-Oh, no, I never thought I'd get this close to someone so divine
-Oh, I can't breathe, no I can't breathe at all
-Aphrodite, could you, could you please be mine? Oh
-Could you please be mine, oh, mine?
-
-Here you are, I've waited so long
-Hoping you would sit down and stay
-'Cause with the stars, I've been dancing along
-Like a fool, so you'd look my way
-
-You're the moon that glows in the sky
-Lighting up my world when it's blue
-Here I sing, though late in the night
-Hope you know I sing just for you
-
-Oh, woah, you've got me in a daze, yeah
-No, woah, it's not another phase
-You gave me one look and now I can't get my mind off of you
-And it's all because
-
-I see the galaxies when I look in your eyes
-And I can't speak, no I can't speak at all
-I swear to Zeus, you're Aphrodite in disguise
-Don't think that you can hide it from me
-Oh, no, I never thought I'd get this close to someone so divine
-Oh, I can't breathe, no I can't breathe at all
-Aphrodite, could you, could you please be mine? Oh
-Could you please be mine, oh, mine?
-Could you please be mine, oh, mine?`
-      },
-
-      {
-        title: "Be With You",
-        from: "All These and More",
-        cover: "assets/artists/Allthese.jpg",
-        audio: "assets/audio/TR-bewithyou.mp3",
-        theme: "sunflower_silhouette",
-        lyrics: `Ooh-ooh, ooh-ooh, ooh-ooh
-Ooh-ooh, ooh-ooh, ooh-ooh
-
-You've changed since you met me and I feel I've done the same
-Our friends, they all notice and your siblings think it's strange
-That I wanna be with you every single day
-For the rest of our lives
-
-I can't help but feel guilty when I'm taking up your time
-So I'll take out my old notebook and I'll put this and write
-Oh, I wanna be with you every single day
-For the rest of our lives
-
-Someday I'll make a home with you
-It may be big, it may be small
-We'll make a space where all the kids can run around and safely fall
-But if the dreams don't happen right away, that's okay
-I just wanna be with you every single day
-For the rest of our lives
-Ooh, ooh, ooh
-Ooh, ooh, ooh
-
-You've changed since you met me and I feel I've done the same
-But I've changed for the better, and you're the one to blame
-That's why I wanna be with you every single day
-
-We've had our share of sorrows and pain that keeps us up at night
-Sometimes I wish we'd stand down instead of putting up a fight
-But still I wanna be with you every single day
-'Til the day that we die
-
-Someday I'll take you 'round the world
-And visit places where you stayed
-I'll place some shows on radios, listen close, I'll sing your name
-But if the dreams don't happen right away, that's okay
-I just wanna be with you every single day
-For the rest of our lives
-
-I'm gonna work on my temper
-While you learn to speak your mind some more
-I'll be more of a shelter and less of a storm
-While we both are working on ourselves in our own ways
-I just wanna be with you every single day
-Oh, I wanna be with you every single day
-For the rest of our lives
-
-(Ooh-ooh, ooh-ooh, ooh-ooh) for the rest of our lives
-(Ooh-ooh, ooh-ooh, ooh-ooh) 'til the day that we die`
-      },
-
-      {
-        title: "Meaningful Silence",
-        from: "Reflections on Moonlight & Poetry",
-        cover: "assets/artists/Reflections.jpg",
-        audio: "assets/audio/TR-Meaning.mp3",
-        theme: "milkyway",
-        lyrics: ``
-      },
-
-      {
-        title: "Love Is",
-        from: "All These and More",
-        cover: "assets/artists/Allthese.jpg",
-        audio: "assets/audio/theRidleys-LoveIs.mp3",
-         lyricsStart: 22,
-        theme: "sunflower_silhouette",
-        lyrics: ``
-      },
-
-      {
-        title: "Milkyway",
-        from: "Until I Reach the Sun",
-        cover: "assets/artists/ReachSun.jpg",
-        audio: "assets/audio/TR-Milkyway.mp3",
-        theme: "milkyway",
-        lyrics: ``
-      },
-
-      {
-        title: "Someday",
-        from: "Until I Reach the Sun",
-        cover: "assets/artists/ReachSun.jpg",
-        audio: "assets/audio/TR-Someday.mp3",
-        theme: "galaxy",
-        lyrics: ``
-      },
-      
-      {
-        title: "KYGM",
-        from: "All These and More",
-        cover: "assets/artists/Allthese.jpg",
-        audio: "assets/audio/TR-KYGM.mp3",
-        theme: "graffiti",
-        lyrics: ``
-      }
+      { title: "Aphrodite", from: "Reflections on Moonlight & Poetry", cover: "assets/artists/Reflections.jpg", audio: "assets/audio/TR-Aphrodite.mp3", theme: "galaxy" },
+      { title: "Be With You", from: "All These and More", cover: "assets/artists/Allthese.jpg", audio: "assets/audio/TR-bewithyou.mp3", theme: "sunflower_silhouette" },
+      { title: "Meaningful Silence", from: "Reflections on Moonlight & Poetry", cover: "assets/artists/Reflections.jpg", audio: "assets/audio/TR-Meaning.mp3", theme: "milkyway" },
+      { title: "Love Is", from: "All These and More", cover: "assets/artists/Allthese.jpg", audio: "assets/audio/theRidleys-LoveIs.mp3", theme: "sunflower_silhouette" },
+      { title: "Milkyway", from: "Until I Reach the Sun", cover: "assets/artists/ReachSun.jpg", audio: "assets/audio/TR-Milkyway.mp3", theme: "milkyway" },
+      { title: "Someday", from: "Until I Reach the Sun", cover: "assets/artists/ReachSun.jpg", audio: "assets/audio/TR-Someday.mp3", theme: "galaxy" },
+      { title: "KYGM", from: "All These and More", cover: "assets/artists/Allthese.jpg", audio: "assets/audio/TR-KYGM.mp3", theme: "graffiti" }
     ]
   },
   {
@@ -1861,158 +442,16 @@ For the rest of our lives
     name: "Cube's Playlist",
     cover: "assets/gate/cubeehead.png",
     songs: [
-      {
-        title: "Moving Closer",
-        from: "Never The Stranger",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-MovingCloser.mp3",
-        theme: "sunflower_silhouette",
-        lyricsStart: 11,
-        lyrics: ``
-      },
-
-      {
-        title: "Tenerife Sea",
-        from: "Ed Sheeran",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-TenerifeSea.mp3",
-        theme: "milkyway",
-        lyrics: ``
-      },
-
-      {
-        title: "Gusto Ko Sa Akin Ka Lang",
-        from: "Robledo Timido",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-gustoko.mp3",
-        theme: "graffiti",
-        lyrics: `
-        HAHAHHAHAHHA Lagyan natin ng genggeng`
-      },
-
-      {
-        title: "Iris",
-        from: "Goo Goo Dolls",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-iris.mp3",
-        theme: "stars_moon",
-        lyrics: ``
-      },
-
-      {
-        title: "Find You",
-        from: "Zedd",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-findyou.mp3",
-        theme: "graffiti",
-        lyrics: ``
-      },
-
-      {
-        title: "Perfect",
-        from: "One Direction",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-perfect.mp3",
-        theme: "galaxy",
-        lyrics: ``
-      },
-
-      {
-        title: "Alam Ko Na",
-        from: "Just Hush/DENY",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-alamkona.mp3",
-        theme: "graffiti",
-        lyrics: `
-Nangingibabaw ang 'yong enerhiya
-Kahit na marami pang iba
-Aking nais na mahatak
-Tanging ang iyong mata, baby
-Dapat bang lapitan ka? O pigilan ang nadarama?
-'To na ba ang una't huli kong tyansa? (Hey)
-Kahit na hindi ka pa kilala
-'Pag nand'yan parang lahat ay tama
-Anong kasalukuyan na iniisip?
-Ibig kong makapasok sa iyong mundo
-Nang walang ibang gumugulo
-Nang bigla kang lumapit sa'kin
-
-Isa lang ang gusto kong malaman
-Handa ka bang sumama kahit sa'n man abutan?
-Bagay na ramdam kahit walang salitaan, yeah
-Kahit 'di mo na sabihin pa, baby ay alam ko na
-
-Sa titig mo, alam ko na kahit 'di ka na magsalita
-Kitang-kita sa mata, aura mo dama
-Saktong nagtugmaan tayong dalawa
-Papalagpasin pa ba natin 'to?
-Kung gusto ko 'yung gusto mo?
-Tara gawin natin 'yung dapat, wala dapat makaawat
-Ituloy mga binabalak, sa kamay ko ay humawak
-Sa kalawakan ang byahe, ang bilis ng mga nangyari
-Swabe, wala nang masabi, hinto
-At kung sakaling maulit mga ganitong klaseng tagpo
-Sana makilala mo pa rin ako, alam mo na
-Sa kalawakan ang byahe, ang bilis ng mga nangyari
-Swabe, wala nang masabi, hinto
-At kung sakaling maulit mga ganitong klaseng tagpo
-Sana makilala mo pa rin ako
-
-Isa lang ang gusto kong malaman
-Handa ka bang sumama kahit sa'n man abutan?
-Bagay na ramdam kahit walang salitaan, yeah
-Kahit 'di mo na sabihin pa, baby ay alam ko na
-
-Gusto kita, ako ay mapasaiyo
-At mapag-isa ang damdamin natin
-Sabihin mo sa'kin kung ano'ng kailangan kong gawin
-Kahit ano mapasa'kin ka lang, dito sa'kin
-Hanggang mag-umaga hawak-hawak ang iyong kamay
-Parang isang romantikong pelikula
-Sa isang tingin pa lang, 'di kailangang pag-usapan pa
-'Yung tipo na alam mo na
-
-Isa lang ang gusto kong malaman
-Handa ka bang sumama kahit sa'n man abutan?
-Bagay na ramdam kahit walang salitaan, yeah
-Kahit 'di mo na sabihin pa, baby ay alam ko na
-Isa lang ang gusto kong malaman
-Handa ka bang sumama kahit sa'n man abutan?
-Bagay na ramdam kahit walang salitaan, yeah
-Kahit 'di mo na sabihin pa, baby ay alam ko na
-
-Baby ay alam ko na, baby ay alam ko na
-Kahit 'di mo na sabihin pa, baby ay alam ko na`
-      },
-
-      {
-        title: "Dito Sa'kin",
-        from: "Earl Agustin",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-ditosakin.mp3",
-        theme: "stars_moon",
-        lyrics: `
-        
-        `
-      },
-
-      {
-        title: "Torpe",
-        from: "JAO",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-torpe.mp3",
-        theme: "milkyway",
-        lyrics: ``
-      },
-
-      {
-        title: "Out of my League",
-        from: "Stephen Speaks",
-        cover: "assets/gate/cubeehead.png",
-        audio: "assets/audio/cube-outofmyleague.mp3",
-        theme: "sunflower_silhouette",
-        lyrics: ``
-      }
+      { title: "Moving Closer", from: "Never The Stranger", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-MovingCloser.mp3", theme: "sunflower_silhouette" },
+      { title: "Tenerife Sea", from: "Ed Sheeran", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-TenerifeSea.mp3", theme: "milkyway" },
+      { title: "Gusto Ko Sa Akin Ka Lang", from: "Robledo Timido", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-gustoko.mp3", theme: "graffiti" },
+      { title: "Iris", from: "Goo Goo Dolls", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-iris.mp3", theme: "stars_moon" },
+      { title: "Find You", from: "Zedd", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-findyou.mp3", theme: "graffiti" },
+      { title: "Perfect", from: "One Direction", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-perfect.mp3", theme: "galaxy" },
+      { title: "Alam Ko Na", from: "Just Hush/DENY", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-alamkona.mp3", theme: "graffiti" },
+      { title: "Dito Sa'kin", from: "Earl Agustin", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-ditosakin.mp3", theme: "stars_moon" },
+      { title: "Torpe", from: "JAO", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-torpe.mp3", theme: "milkyway" },
+      { title: "Out of my League", from: "Stephen Speaks", cover: "assets/gate/cubeehead.png", audio: "assets/audio/cube-outofmyleague.mp3", theme: "sunflower_silhouette" }
     ]
   },
   {
@@ -2020,84 +459,15 @@ Kahit 'di mo na sabihin pa, baby ay alam ko na`
     name: "Mochiii's Playlist",
     cover: "assets/gate/mochiiihead.png",
     songs: [
-      {
-        title: "KLWKN",
-        from: "Music Hero",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-KLWKN.mp3",
-        theme: "milkway",
-        lyrics: ``
-     },
-{
-        title: "Dandelions",
-        from: "Ruth B",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-Dandelions.mp3",
-        theme: "sunflower_silhouette",
-        lyrics: ``
-     },
-
-      {
-        title: "Shinobi",
-        from: "Just Hush",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-shinobi.mp3",
-        theme: "graffiti",
-        lyrics: ``
-     },
-
-      {
-        title: "Ipagdadamot Kita",
-        from: "OLG Zak",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-ipagdadamotkita.mp3",
-        theme: "graffiti",
-        lyrics: ``
-     },
-
-      {
-        title: "Dream Lanterns",
-        from: "RADWIMPS",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-Dream.mp3",
-        theme: "milkyway",
-        lyrics: ``
-     },
-
-       {
-        title: "Co-Pilot",
-        from: "Jush Hush",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-copilot.mp3",
-        theme: "graffiti",
-        lyrics: ``
-     },
-       {
-        title: "Ikot",
-        from: "Over October",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-ikot.mp3",
-        theme: "milkyway",
-        lyrics: ``
-     },
-
-       {
-        title: "My Day",
-        from: "HellMerry",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-myday.mp3",
-        theme: "graffiti",
-        lyrics: ``
-     },
-
-       {
-        title: "Atlantis",
-        from: "Seafret",
-        cover: "assets/gate/mochiiihead.png",
-        audio: "assets/audio/moch-atlantis.mp3",
-        theme: "galaxy",
-        lyrics: ``
-     }
+      { title: "KLWKN", from: "Music Hero", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-KLWKN.mp3", theme: "milkway" },
+      { title: "Dandelions", from: "Ruth B", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-Dandelions.mp3", theme: "sunflower_silhouette" },
+      { title: "Shinobi", from: "Just Hush", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-shinobi.mp3", theme: "graffiti" },
+      { title: "Ipagdadamot Kita", from: "OLG Zak", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-ipagdadamotkita.mp3", theme: "graffiti" },
+      { title: "Dream Lanterns", from: "RADWIMPS", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-Dream.mp3", theme: "milkyway" },
+      { title: "Co-Pilot", from: "Jush Hush", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-copilot.mp3", theme: "graffiti" },
+      { title: "Ikot", from: "Over October", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-ikot.mp3", theme: "milkyway" },
+      { title: "My Day", from: "HellMerry", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-myday.mp3", theme: "graffiti" },
+      { title: "Atlantis", from: "Seafret", cover: "assets/gate/mochiiihead.png", audio: "assets/audio/moch-atlantis.mp3", theme: "galaxy" }
     ]
   },
 ];
@@ -2150,7 +520,6 @@ function centeredRect(el){
 
 let currentArtist = null;
 let currentSongIndex = -1; // -1 = nothing picked yet
-let currentLyricsStart = 0; // seconds before lyrics start scrolling, for the loaded song
 let playing = false;
 let vinylFlying = false; // guards against overlapping fly animations
 
@@ -2198,25 +567,6 @@ function fmt(s){
 /* ---------- themed magical backgrounds ---------- */
 const themeBg = document.getElementById('themeBg');
 
-/* places one item per grid cell (with jitter) so the whole screen fills up,
-   instead of a purely random scatter that tends to leave empty patches */
-function gridPositions(cols, rows){
-  const cellW = 100 / cols, cellH = 100 / rows;
-  const spots = [];
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      const jitterX = (Math.random()-0.5) * cellW * 0.7;
-      const jitterY = (Math.random()-0.5) * cellH * 0.7;
-      const left = c * cellW + cellW/2 + jitterX;
-      const top = r * cellH + cellH/2 + jitterY;
-      spots.push({left, top});
-    }
-  }
-  return spots;
-}
-
-/* real nebula photo as the base — just add a sparse extra twinkle layer
-   and a couple of streaking meteors so the sky feels alive */
 function buildGalaxy(){
   const layer = document.getElementById('galaxyLayer');
   if(layer.dataset.built) return;
@@ -2231,7 +581,6 @@ function buildGalaxy(){
     html += `<div class="${cls}" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
   }
 
-  // meteors streaking across the nebula
   for(let i=0;i<3;i++){
     const top = 5 + Math.random()*55, left = Math.random()*65;
     const ang = 16 + Math.random()*20;
@@ -2242,8 +591,6 @@ function buildGalaxy(){
   layer.innerHTML = html;
 }
 
-/* real Milky Way photo as the base — sparse twinkle plus a couple of
-   meteors streaking past, echoing the one already caught in the photo */
 function buildMilkyway(){
   const layer = document.getElementById('milkywayLayer');
   if(layer.dataset.built) return;
@@ -2268,8 +615,6 @@ function buildMilkyway(){
   layer.innerHTML = html;
 }
 
-/* real moon-through-the-trees photo as the base — a little extra twinkle
-   in the sky above, plus warm fireflies drifting near the tree line */
 function buildStarsMoon(){
   const layer = document.getElementById('starsmoonLayer');
   if(layer.dataset.built) return;
@@ -2295,8 +640,6 @@ function buildStarsMoon(){
   layer.innerHTML = html;
 }
 
-/* real sunflower photo (tinted dark via CSS) as the base — just scatter
-   twinkling stars over the top portion of the sky on top of it */
 function buildSunflowerSil(){
   const layer = document.getElementById('sunflowersilLayer');
   if(layer.dataset.built) return;
@@ -2304,7 +647,7 @@ function buildSunflowerSil(){
   let html = '';
 
   for(let i=0;i<130;i++){
-    const top = Math.random()*62, left = Math.random()*100; // keep stars mostly in the sky, above the flowers
+    const top = Math.random()*62, left = Math.random()*100;
     const size = 0.8 + Math.random()*1.5;
     const dur = 2.5 + Math.random()*4, delay = Math.random()*5;
     const cls = Math.random() < 0.15 ? 'star bright' : 'star';
@@ -2314,8 +657,6 @@ function buildSunflowerSil(){
   layer.innerHTML = html;
 }
 
-/* real ink-swirl photo as the base — drifting colour sparks (matched to
-   the photo's blue/orange/pink palette) give it a sense of movement */
 function buildGraffiti(){
   const layer = document.getElementById('graffitiLayer');
   if(layer.dataset.built) return;
@@ -2373,7 +714,6 @@ function renderArtists(){
 let navigating = false;
 
 function goTo(fromEl, toEl, direction){
-  // direction: 'forward' (artists -> songs) or 'backward' (songs -> artists)
   if(navigating) return;
   navigating = true;
 
@@ -2440,18 +780,20 @@ function positionSongsArc(){
   const center = size / 2;
   const n = discs.length;
 
-  // shrink discs a little once there are many songs, so spacing stays healthy
-  const baseDiscSize = 44;
-  const minDiscSize = 30;
-  const discSize = n <= 8 ? baseDiscSize : Math.max(minDiscSize, baseDiscSize - (n - 8) * 1.5);
+  // mini vinyls are bigger now — shrink a bit only once there are lots of songs
+  const baseDiscSize = 56;
+  const minDiscSize = 38;
+  const discSize = n <= 8 ? baseDiscSize : Math.max(minDiscSize, baseDiscSize - (n - 8) * 1.8);
 
-  const gap = 18; // space between turntable edge and nearest disc
+  const gap = 20; // space between turntable edge and nearest disc
   const radius = center + gap + discSize / 2;
 
   // guarantee this much empty space between adjacent disc edges
   const edgeGap = 10;
   const minStepDeg = ((discSize + edgeGap) / radius) * (180 / Math.PI);
-  const spread = Math.min(260, minStepDeg * (n - 1 || 1));
+  // spread now reaches past a half circle (180deg) around the turntable,
+  // wrapping the mini vinyls further round instead of stopping at the top
+  const spread = Math.min(320, minStepDeg * (n - 1 || 1));
   const start = -spread / 2;
   const step = n > 1 ? spread / (n - 1) : 0;
 
@@ -2473,20 +815,6 @@ window.addEventListener('resize', ()=>{
   if(currentArtist) positionSongsArc();
 });
 
-function renderLyrics(text){
-  const lyricsScroll = document.getElementById('lyricsScroll');
-  if(!text){
-    lyricsScroll.innerHTML = '';
-    lyricsScroll.style.transform = 'translateY(0px)';
-    return;
-  }
-  lyricsScroll.innerHTML = text.split('\n\n').map(block=>{
-    const lines = block.split('\n').map(l=>l.trim()).filter(Boolean).join('<br>');
-    return `<p>${lines}</p>`;
-  }).join('');
-  lyricsScroll.style.transform = 'translateY(0px)';
-}
-
 /* ---------- blank player state (shown right after picking an artist) ---------- */
 function showBlankPlayer(){
   audio.pause();
@@ -2496,8 +824,6 @@ function showBlankPlayer(){
   coverPlaceholder.style.display = 'flex';
   trackName.textContent = 'Select a song';
   trackFrom.textContent = '';
-  currentLyricsStart = 0;
-  renderLyrics('');
   fill.style.width = '0%';
   tcur.textContent = '0:00';
   tend.textContent = '0:00';
@@ -2508,14 +834,12 @@ function showBlankPlayer(){
 function loadSong(i, autoplay){
   currentSongIndex = i;
   const s = currentArtist.songs[i];
-  currentLyricsStart = s.lyricsStart || 0;
   coverPlaceholder.style.display = 'none';
   coverImg.style.display = '';
   coverImg.src = s.cover;
   trackName.textContent = s.title;
   trackFrom.textContent = s.from || 'chorus';
   audio.src = s.audio;
-  renderLyrics(s.lyrics);
   renderSongsRow();
   setTheme(s.theme || null);
   fill.style.width = '0%';
@@ -2530,8 +854,6 @@ function loadSong(i, autoplay){
 
 /* ---------- flying vinyl swap: mini disc <-> big turntable ---------- */
 function flyAnimateSwitch(newIndex, autoplay){
-  // nothing playing yet, or same song clicked again, or an animation is already
-  // mid-flight — just do a plain load, no flight needed
   if(currentSongIndex === -1 || newIndex === currentSongIndex || vinylFlying || !currentArtist){
     loadSong(newIndex, autoplay);
     return;
@@ -2557,7 +879,6 @@ function flyAnimateSwitch(newIndex, autoplay){
   const newSrc = currentArtist.songs[newIndex].cover;
   const oldSrc = coverImg.src;
 
-  // hide the originals for the duration of the flight so it doesn't look doubled
   targetImgEl.style.visibility = 'hidden';
   oldImgEl.style.visibility = 'hidden';
   coverImg.style.visibility = 'hidden';
@@ -2584,7 +905,6 @@ function flyAnimateSwitch(newIndex, autoplay){
   flyOut.style.opacity = '1';
   document.body.appendChild(flyOut);
 
-  // force layout, then animate to the swapped destinations
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       flyIn.style.left = bigRect.left + 'px';
@@ -2650,22 +970,9 @@ audio.addEventListener('loadedmetadata', ()=>{
 });
 
 audio.addEventListener('timeupdate', ()=>{
-  // overall progress bar always reflects real playback position
   const pct = (audio.currentTime / audio.duration) * 100 || 0;
   fill.style.width = pct + '%';
   tcur.textContent = fmt(audio.currentTime);
-
-  // lyrics scroll: held at 0 until currentLyricsStart, then scrolls across
-  // the remaining runtime of the song
-  const lyricsScroll = document.getElementById('lyricsScroll');
-  const maxScroll = lyricsScroll.scrollHeight - 96;
-
-  if(maxScroll > 0 && isFinite(audio.duration)){
-    const elapsed = Math.max(0, audio.currentTime - currentLyricsStart);
-    const scrollableDuration = Math.max(0.001, audio.duration - currentLyricsStart);
-    const scrollPct = Math.min(100, (elapsed / scrollableDuration) * 100 * LYRIC_SCROLL_SPEED);
-    lyricsScroll.style.transform = `translateY(-${(scrollPct/100) * maxScroll}px)`;
-  }
 });
 
 audio.addEventListener('ended', ()=>{
